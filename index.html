@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英文單字智能閃卡系統</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --success-color: #2ecc71;
+            --warning-color: #f1c40f;
+            --danger-color: #e74c3c;
+            --text-color: #2c3e50;
+            --bg-color: #f5f7fa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            align-items: center;
+            padding: 15px;
+        }
+
+        header {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        select, button.reset-btn {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            background: white;
+            outline: none;
+        }
+
+        button.reset-btn {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        /* 閃卡主體 */
+        .card-container {
+            width: 100%;
+            max-width: 500px;
+            flex-grow: 1;
+            perspective: 1000px;
+            margin-bottom: 20px;
+            min-height: 280px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.4s ease;
+            cursor: pointer;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+            text-align: center;
+            border-radius: 16px;
+        }
+
+        .card-front {
+            background-color: #ffffff;
+        }
+
+        .card-back {
+            background-color: #ffffff;
+            transform: rotateY(180deg);
+            border: 2px solid #ecf0f1;
+        }
+
+        .hint {
+            font-size: 0.85rem;
+            color: #bdc3c7;
+            position: absolute;
+            bottom: 15px;
+        }
+
+        .word-text {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .word-text.zh {
+            font-size: 1.8rem;
+            color: #2c3e50;
+        }
+
+        .phonetic {
+            font-size: 1.1rem;
+            color: #7f8c8d;
+            font-family: sans-serif;
+            margin-bottom: 15px;
+        }
+
+        .translation {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .example {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.4;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+        }
+
+        /* 按鈕操作區 */
+        .action-container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-row {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-show { background-color: var(--primary-color); }
+        .btn-wrong { background-color: var(--danger-color); }
+        .btn-medium { background-color: var(--warning-color); color: #333; }
+        .btn-easy { background-color: var(--success-color); }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📖 智慧單字閃卡</h1>
+        <div class="controls">
+            <select id="modeSelect" onchange="changeMode()">
+                <option value="en-to-zh">模式：英翻中</option>
+                <option value="zh-to-en">模式：中翻英</option>
+            </select>
+            <button class="reset-btn" onclick="resetData()">重置數據</button>
+        </div>
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <div id="statsText" class="stats">載入中...</div>
+    </header>
+
+    <div class="card-container" onclick="flipCard()">
+        <div id="card" class="card">
+            <div class="card-face card-front">
+                <div id="frontText" class="word-text">Word</div>
+                <div id="frontPhonetic" class="phonetic"></div>
+                <div class="hint">點擊卡片翻面看答案</div>
+            </div>
+            <div class="card-face card-back">
+                <div id="backText" class="word-text">答案</div>
+                <div id="backTranslation" class="translation">中文翻譯</div>
+                <div id="backExample" class="example">例句</div>
+                <div class="hint">點擊卡片可翻回正面</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-container">
+        <button id="btnShow" class="btn btn-shadow btn-show" onclick="flipCard()">顯示答案</button>
+        
+        <div id="scoreBtns" class="btn-row hidden">
+            <button class="btn btn-wrong" onclick="scoreWord(1)">❌ 不會/錯</button>
+            <button class="btn btn-medium" onclick="scoreWord(3)">🔺 模糊/想很久</button>
+            <button class="btn btn-easy" onclick="scoreWord(5)">✅ 很熟練</button>
+        </div>
+    </div>
+
+    <script>
+        // 原始課本單字資料庫 (包含 55 個單字/衍生詞/片語)
+        const rawVocabDb = [
+            { en: "dignity", phonetic: "[ˈdɪɡnətɪ]", zh: "n. 尊嚴；高尚", ex: "Michael lost a lot when his company failed, but he still had his dignity." },
+            { en: "dignify", phonetic: "[ˈdɪɡnɪfaɪ]", zh: "v. 使有尊嚴", ex: "The silver hair dignified the old man." },
+            { en: "dignified", phonetic: "[ˈdɪɡnɪfaɪd]", zh: "adj. 有尊嚴的", ex: "Chris answered in a dignified manner." },
+            { en: "undignified", phonetic: "[ʌnˈdɪɡnɪfaɪd]", zh: "adj. 無威嚴的", ex: "It is undignified for a teacher to shout at students." },
+            { en: "volunteer", phonetic: "[ˌvɒlənˈtɪər]", zh: "n. 志願者；義工 / v. 自願參加", ex: "The boss is looking for a volunteer to take on this new project." },
+            { en: "do volunteer work", phonetic: "-", zh: "phr. 做志工；做義工", ex: "Maria does volunteer work at the hospital two days a week." },
+            { en: "leather", phonetic: "[ˈleðər]", zh: "n. 皮革 / adj. 皮革製的", ex: "My wallet is made of leather." },
+            { en: "exact", phonetic: "[ɪɡˈzækt]", zh: "adj. 確切的；精確的", ex: "I don't remember the exact amount I paid for this coat." },
+            { en: "precise", phonetic: "[prɪˈsaɪs]", zh: "adj. 精確的；準確的", ex: "The scientist gave precise measurements." },
+            { en: "exactly", phonetic: "[ɪɡˈzæktlɪ]", zh: "adv. 正好；精確地", ex: "That's exactly what I meant." },
+            { en: "not exactly", phonetic: "-", zh: "phr. 不完全是", ex: "A: Did you finish your homework? B: Not exactly." },
+            { en: "partner", phonetic: "[ˈpɑːrtnər]", zh: "v. 與...合作 / n. 夥伴", ex: "The company has partnered with a local hospital." },
+            { en: "partnership", phonetic: "[ˈpɑːrtnərʃɪp]", zh: "n. 合夥關係", ex: "They formed a business partnership." },
+            { en: "assemble", phonetic: "[əˈsembl]", zh: "v. 集合；組裝", ex: "The teachers assembled the students in the school's theater." },
+            { en: "assembly line", phonetic: "-", zh: "n. 生產線；裝配線", ex: "He works on an automobile assembly line." },
+            { en: "suitable", phonetic: "[ˈsuːtəbl]", zh: "adj. 合適的；適宜的", ex: "I don't think shorts are suitable clothing during cold weather." },
+            { en: "permission", phonetic: "[pəˈmɪʃn]", zh: "n. 許可；准許", ex: "You need permission from your parents to go on the school trip." },
+            { en: "authority", phonetic: "[ɔːˈθɒrətɪ]", zh: "n. 行政管理機構；權威人士", ex: "Professor Platt is the authority on the history of Canada." },
+            { en: "poster", phonetic: "[ˈpoʊstər]", zh: "n. 海報；大幅廣告", ex: "Linda hung a poster of her favorite singer in her bedroom." },
+            { en: "host", phonetic: "[hoʊst]", zh: "vt. 主辦；主持 / n. 主人", ex: "Athens played host to the 2004 Summer Olympic Games." },
+            { en: "poverty", phonetic: "[ˈpɒvətɪ]", zh: "n. 貧窮；貧困", ex: "People who live in poverty often do not get enough food." },
+            { en: "historical", phonetic: "[hɪˈstɔːrɪkl]", zh: "adj. 歷史上的；與歷史有關的", ex: "This historical novel is set in the 1800s." },
+            { en: "historic", phonetic: "[hɪˈstɔːrɪk]", zh: "adj. 具歷史意義的", ex: "It was a historic moment when man first landed on the moon." },
+            { en: "female", phonetic: "[ˈfiːmeɪl]", zh: "adj. 女性的 / n. 雌性生物", ex: "The dog is a female, and the cat is a male." },
+            { en: "dive", phonetic: "[daɪv]", zh: "vi. 跳水；潛水", ex: "The three boys dove into the lake." },
+            { en: "freezing", phonetic: "[ˈfriːzɪŋ]", zh: "adj. 寒冷的", ex: "It's freezing outside. Put on a coat." },
+            { en: "similarly", phonetic: "[ˈsɪmələrlɪ]", zh: "adv. 同樣地；類似地", ex: "Senior citizens can see the show for free. Similarly, children under twelve don't need to pay." },
+            { en: "difference", phonetic: "[ˈdɪfərəns]", zh: "n. 差異；分歧", ex: "What is the difference between the two reports?" },
+            { en: "make a difference", phonetic: "-", zh: "phr. 產生效果或作用；改善情況", ex: "Exercising every day has made a big difference to Justine's weight." },
+            { en: "zone", phonetic: "[zoʊn]", zh: "n. 區域", ex: "The children's zone was painted a light pink." },
+            { en: "zone out", phonetic: "-", zh: "phr. 恍神；精神不集中", ex: "Jason was so tired that he zoned out." },
+            { en: "recover", phonetic: "[rɪˈkʌvər]", zh: "vt./vi. 復原；收復", ex: "It took a few months for the athlete to recover from his injury." },
+            { en: "devise", phonetic: "[dɪˈvaɪz]", zh: "vt. 設計；想出；策劃", ex: "Jerry devised a new way to make tea." },
+            { en: "strategy", phonetic: "[ˈstrætədʒɪ]", zh: "n. 策略；行動計畫", ex: "I'm looking for strategies to make my business grow." },
+            { en: "passenger", phonetic: "[ˈpæsɪndʒər]", zh: "n. 乘客", ex: "The passengers weren't hurt in the car accident." },
+            { en: "calculate", phonetic: "[ˈkælkjuleɪt]", zh: "vt./vi. 計算；估計", ex: "I will need a minute to calculate the cost of the vacation." },
+            { en: "whenever", phonetic: "[hwɛnˈɛvər]", zh: "conj. 每當......；不論何時", ex: "Whenever I visit a new location, I like to explore it on foot." },
+            { en: "fever", phonetic: "[ˈfiːvər]", zh: "n. 發燒；發熱", ex: "Her fever got worse during the night." },
+            { en: "positive", phonetic: "[ˈpɒzətɪv]", zh: "adj. 正面的；積極的；肯定的", ex: "Books can have a positive influence on a child's life." },
+            { en: "increase", phonetic: "[ɪnˈkriːs]", zh: "vt./vi./n. 增加", ex: "Margot wants to increase the amount of vegetables she eats." },
+            { en: "project", phonetic: "[ˈprɒdʒekt]", zh: "n. 計畫；專案 / vt. 預測", ex: "Ernest always starts new projects, but never finishes them." },
+            { en: "current", phonetic: "[ˈkʌrənt]", zh: "adj. 當前的 / n. 潮流；水流", ex: "Do you like your current job?" },
+            { en: "domestic", phonetic: "[dəˈmestɪk]", zh: "adj. 國內的；家庭的；馴養的", ex: "This airport is used for domestic flights only." },
+            { en: "introduce", phonetic: "[ˌɪntrəˈdjuːs]", zh: "vt. 引進；介紹", ex: "I'd like to introduce you to some of my friends from school." },
+            { en: "settler", phonetic: "[ˈsetlər]", zh: "n. 移民者；開拓者", ex: "Early American settlers had a hard time surviving the cold weather." },
+            { en: "desperate", phonetic: "[ˈdespərət]", zh: "adj. 心急如焚的；迫切需要的", ex: "John is desperate to make it as an actor." },
+            { en: "get rid of", phonetic: "-", zh: "phr. 擺脫；丟棄", ex: "I want to get rid of some things that I no longer need." },
+            { en: "altogether", phonetic: "[ˌɔːltəˈɡeðər]", zh: "adv. 完全；全然；總共", ex: "During my trip to Tainan, I spent NT$900 altogether." },
+            { en: "balance", phonetic: "[ˈbæləns]", zh: "n. 平衡 / vi. 保持平衡", ex: "There was a nice balance of sweet and spicy dishes at dinner." },
+            { en: "afterwards", phonetic: "[ˈæftərwərdz]", zh: "adv. 之後；後來", ex: "First we will see a movie, and then afterwards we will get ice cream." },
+            { en: "return", phonetic: "[rɪˈtɜːrn]", zh: "vi. 回來 / vt. 退貨 / n. 回歸", ex: "Jack forgot to bring the customer's file, so he had to return to his desk." },
+            { en: "difficulty", phonetic: "[ˈdɪfɪkəltɪ]", zh: "n. 困難；難題", ex: "We ran into some difficulties during the project." },
+            { en: "adult", phonetic: "[əˈdʌlt]", zh: "n. 成年人", ex: "Both adults and children like the movie." },
+            { en: "saying", phonetic: "[ˈseɪɪŋ]", zh: "n. 諺語；格言", ex: "My grandfather had a folksy saying for almost every situation." },
+            { en: "beggar", phonetic: "[ˈbeɡər]", zh: "n. 乞丐", ex: "The police officer gave the beggar a sandwich and coffee." }
+        ];
+
+        let wordProgress = {};
+        let currentWordIndex = -1;
+        let isFlipped = false;
+        let currentMode = 'en-to-zh'; // en-to-zh 或 zh-to-en
+
+        // 初始化載入
+        function init() {
+            const savedProgress = localStorage.getItem('vocab_progress_v1');
+            if (savedProgress) {
+                wordProgress = JSON.parse(savedProgress);
+            } else {
+                // 首次建立學習進度
+                rawVocabDb.forEach((item, index) => {
+                    wordProgress[index] = {
+                        box: 1,         // 記憶盒子等級 (1~5)，答錯會降回1，熟練會升級
+                        nextReview: 0,  // 下次複習時間戳 (0 代表需要立刻複習)
+                        wrongCount: 0
+                    };
+                });
+                saveData();
+            }
+            pickNextWord();
+        }
+
+        function saveData() {
+            localStorage.setItem('vocab_progress_v1', JSON.stringify(wordProgress));
+        }
+
+        // 基於記憶曲線篩選下一個要出現的單字
+        function pickNextWord() {
+            const now = Date.now();
+            let candidates = [];
+
+            // 1. 優先找出到了複習時間(nextReview <= now)的單字
+            for (let idx in wordProgress) {
+                if (wordProgress[idx].nextReview <= now) {
+                    candidates.push({ idx: parseInt(idx), ...wordProgress[idx] });
+                }
+            }
+
+            // 2. 如果大家都還沒到複習時間，就挑選「盒子等級最低（最不熟）」的單字提早複習
+            if (candidates.length === 0) {
+                let minBox = 6;
+                for (let idx in wordProgress) {
+                    if (wordProgress[idx].box < minBox) {
+                        minBox = wordProgress[idx].box;
+                    }
+                }
+                for (let idx in wordProgress) {
+                    if (wordProgress[idx].box === minBox) {
+                        candidates.push({ idx: parseInt(idx), ...wordProgress[idx] });
+                    }
+                }
+            }
+
+            // 3. 從候選名單中隨機抽一個，避免每次順序固定
+            const randomPick = candidates[Math.floor(Math.random() * candidates.length)];
+            currentWordIndex = randomPick.idx;
+
+            renderCard();
+            updateStats();
+        }
+
+        // 渲染卡片內容
+        function renderCard() {
+            const word = rawVocabDb[currentWordIndex];
+            const cardEl = document.getElementById('card');
+            
+            // 重置翻面狀態
+            isFlipped = false;
+            cardEl.classList.remove('flipped');
+            document.getElementById('btnShow').classList.remove('hidden');
+            document.getElementById('scoreBtns').classList.add('hidden');
+
+            if (currentMode === 'en-to-zh') {
+                // 正面英文、反面中文
+                document.getElementById('frontText').innerText = word.en;
+                document.getElementById('frontText').classList.remove('zh');
+                document.getElementById('frontPhonetic').innerText = word.phonetic;
+
+                document.getElementById('backText').innerText = word.en;
+                document.getElementById('backTranslation').innerText = word.zh;
+                document.getElementById('backExample').innerText = "💡 例句：\n" + word.ex;
+            } else {
+                // 正面中文、反面英文
+                document.getElementById('frontText').innerText = word.zh;
+                document.getElementById('frontText').classList.add('zh');
+                document.getElementById('frontPhonetic').innerText = "";
+
+                document.getElementById('backText').innerText = word.en;
+                document.getElementById('backTranslation').innerText = word.phonetic;
+                document.getElementById('backExample').innerText = "💡 例句：\n" + word.ex;
+            }
+        }
+
+        // 翻轉卡片
+        function flipCard() {
+            if (isFlipped) {
+                // 如果已經翻開，點擊可翻回正面
+                document.getElementById('card').classList.remove('flipped');
+                isFlipped = false;
+            } else {
+                // 翻至背面顯示答案
+                document.getElementById('card').classList.add('flipped');
+                isFlipped = true;
+                document.getElementById('btnShow').classList.add('hidden');
+                document.getElementById('scoreBtns').classList.remove('hidden');
+            }
+        }
+
+        // 使用者自我評估熟練度
+        // score: 1 = 不會/錯, 3 = 模糊, 5 = 很熟練
+        function scoreWord(score) {
+            const progress = wordProgress[currentWordIndex];
+            const now = Date.now();
+            let delayMinutes = 1;
+
+            if (score === 1) {
+                progress.box = 1;
+                progress.wrongCount += 1;
+                delayMinutes = 0.5; // 半分鐘後再次出現，加深印象
+            } else if (score === 3) {
+                // 模糊：稍微拉開一點時間 (例：5分鐘)
+                progress.box = Math.max(1, progress.box);
+                delayMinutes = 5;
+            } else if (score === 5) {
+                // 熟練：提升盒子等級，並按曲線拉長時間
+                progress.box = Math.min(5, progress.box + 1);
+                // 根據盒子等級決定下一次出現的時間間隔（模擬記憶曲線）
+                // 盒子 2: 30分鐘, 3: 4小時, 4: 1天, 5: 4天
+                const intervals = [1, 30, 240, 1440, 5760];
+                delayMinutes = intervals[progress.box - 1];
+            }
+
+            // 設定下一次可以複習的時間
+            progress.nextReview = now + (delayMinutes * 60 * 1000);
+            
+            saveData();
+            pickNextWord();
+        }
+
+        // 更新進度條與數據統計
+        function updateStats() {
+            let totalWords = rawVocabDb.length;
+            let masterWords = 0; // 盒子等級大於等於 4 的算熟練
+
+            for (let idx in wordProgress) {
+                if (wordProgress[idx].box >= 4) {
+                    masterWords++;
+                }
+            }
+
+            const percent = Math.round((masterWords / totalWords) * 100);
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('statsText').innerText = `總單字量: ${totalWords} | 高熟練度: ${masterWords} (${percent}%)`;
+        }
+
+        // 切換 模式 (英翻中 / 中翻英)
+        function changeMode() {
+            currentMode = document.getElementById('modeSelect').value;
+            renderCard();
+        }
+
+        // 重置所有進度
+        function resetData() {
+            if (confirm("確定要重置所有單字的記憶曲線與錯誤紀錄嗎？")) {
+                localStorage.removeItem('vocab_progress_v1');
+                init();
+            }
+        }
+
+        // 啟動
+        window.onload = init;
+    </script>
+</body>
+</html>
