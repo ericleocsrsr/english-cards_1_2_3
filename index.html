@@ -79,7 +79,7 @@
 
         .progress-fill {
             height: 100%;
-            background-color: var(--primary-color);
+            background-color: var(--success-color);
             width: 0%;
             transition: width 0.3s ease;
         }
@@ -214,13 +214,10 @@
             transition: transform 0.1s, opacity 0.2s;
         }
 
-        .btn:active {
-            transform: scale(0.98);
-        }
-
         .btn-show { background-color: var(--primary-color); }
         .btn-wrong { background-color: var(--danger-color); }
         .btn-medium { background-color: var(--warning-color); color: #333; }
+        .btn-good { background-color: #3498db; }
         .btn-easy { background-color: var(--success-color); }
 
         .hidden { display: none !important; }
@@ -229,7 +226,7 @@
 <body>
 
     <header>
-        <h1>📖 智慧單字閃卡</h1>
+        <h1>📖 智慧單字閃卡 (總題數版)</h1>
         <div class="controls">
             <select id="modeSelect" onchange="changeMode()">
                 <option value="en-to-zh">模式：英翻中</option>
@@ -264,13 +261,14 @@
         
         <div id="scoreBtns" class="btn-row hidden">
             <button class="btn btn-wrong" onclick="scoreWord(1)">❌ 不會/錯</button>
-            <button class="btn btn-medium" onclick="scoreWord(3)">🔺 模糊/想很久</button>
-            <button class="btn btn-easy" onclick="scoreWord(5)">✅ 很熟練</button>
+            <button class="btn btn-medium" onclick="scoreWord(2)">🔺 模糊</button>
+            <button class="btn btn-good" onclick="scoreWord(4)">👍 掌握</button>
+            <button class="btn btn-easy" onclick="scoreWord(5)">✅ 熟練</button>
         </div>
     </div>
 
     <script>
-        // 原始課本單字資料庫 (包含 55 個單字/衍生詞/片語)
+        // 核心 55 個單字庫
         const rawVocabDb = [
             { en: "dignity", phonetic: "[ˈdɪɡnətɪ]", zh: "n. 尊嚴；高尚", ex: "Michael lost a lot when his company failed, but he still had his dignity." },
             { en: "dignify", phonetic: "[ˈdɪɡnɪfaɪ]", zh: "v. 使有尊嚴", ex: "The silver hair dignified the old man." },
@@ -303,8 +301,8 @@
             { en: "make a difference", phonetic: "-", zh: "phr. 產生效果或作用；改善情況", ex: "Exercising every day has made a big difference to Justine's weight." },
             { en: "zone", phonetic: "[zoʊn]", zh: "n. 區域", ex: "The children's zone was painted a light pink." },
             { en: "zone out", phonetic: "-", zh: "phr. 恍神；精神不集中", ex: "Jason was so tired that he zoned out." },
-            { en: "recover", phonetic: "[rɪˈkʌvər]", zh: "vt./vi. 復原；收復", ex: "It took a few months for the athlete to recover from his injury." },
-            { en: "devise", phonetic: "[dɪˈvaɪz]", zh: "vt. 設計；想出；策劃", ex: "Jerry devised a new way to make tea." },
+            { mod: "recover", en: "recover", phonetic: "[rɪˈkʌvər]", zh: "vt./vi. 復原；收復", ex: "It took a few months for the athlete to recover from his injury." },
+            { en: "devise", phonetic: "[dɪˈvaɪz]", zh: "td. 設計；想出；策劃", ex: "Jerry devised a new way to make tea." },
             { en: "strategy", phonetic: "[ˈstrætədʒɪ]", zh: "n. 策略；行動計畫", ex: "I'm looking for strategies to make my business grow." },
             { en: "passenger", phonetic: "[ˈpæsɪndʒər]", zh: "n. 乘客", ex: "The passengers weren't hurt in the car accident." },
             { en: "calculate", phonetic: "[ˈkælkjuleɪt]", zh: "vt./vi. 計算；估計", ex: "I will need a minute to calculate the cost of the vacation." },
@@ -329,24 +327,26 @@
             { en: "beggar", phonetic: "[ˈbeɡər]", zh: "n. 乞丐", ex: "The police officer gave the beggar a sandwich and coffee." }
         ];
 
+        // 建立 110 個獨立題目節點的學習進度
         let wordProgress = {};
-        let currentWordIndex = -1;
+        let currentKey = ""; // 格式例如 "5_en-to-zh" (單字索引_模式)
         let isFlipped = false;
-        let currentMode = 'en-to-zh'; // en-to-zh 或 zh-to-en
+        let currentMode = 'en-to-zh';
 
-        // 初始化載入
         function init() {
-            const savedProgress = localStorage.getItem('vocab_progress_v1');
+            const savedProgress = localStorage.getItem('vocab_flashcard_progress_v5');
             if (savedProgress) {
                 wordProgress = JSON.parse(savedProgress);
-            } else {
-                // 首次建立學習進度
+                // 防呆補全
                 rawVocabDb.forEach((item, index) => {
-                    wordProgress[index] = {
-                        box: 1,         // 記憶盒子等級 (1~5)，答錯會降回1，熟練會升級
-                        nextReview: 0,  // 下次複習時間戳 (0 代表需要立刻複習)
-                        wrongCount: 0
-                    };
+                    if (!wordProgress[`${index}_en-to-zh`]) wordProgress[`${index}_en-to-zh`] = { box: 1, nextReview: 0 };
+                    if (!wordProgress[`${index}_zh-to-en`]) wordProgress[`${index}_zh-to-en`] = { box: 1, nextReview: 0 };
+                });
+            } else {
+                // 首次建立，英翻中 55 題 + 中翻英 55 題 = 總共 110 題
+                rawVocabDb.forEach((item, index) => {
+                    wordProgress[`${index}_en-to-zh`] = { box: 1, nextReview: 0 };
+                    wordProgress[`${index}_zh-to-en`] = { box: 1, nextReview: 0 };
                 });
                 saveData();
             }
@@ -354,57 +354,53 @@
         }
 
         function saveData() {
-            localStorage.setItem('vocab_progress_v1', JSON.stringify(wordProgress));
+            localStorage.setItem('vocab_flashcard_progress_v5', JSON.stringify(wordProgress));
         }
 
-        // 基於記憶曲線篩選下一個要出現的單字
         function pickNextWord() {
             const now = Date.now();
             let candidates = [];
 
-            // 1. 優先找出到了複習時間(nextReview <= now)的單字
-            for (let idx in wordProgress) {
-                if (wordProgress[idx].nextReview <= now) {
-                    candidates.push({ idx: parseInt(idx), ...wordProgress[idx] });
+            // 1. 篩選目前模式（英翻中或中翻英）下時間到了的記憶卡
+            for (let key in wordProgress) {
+                if (key.endsWith(currentMode) && wordProgress[key].nextReview <= now) {
+                    candidates.push({ key: key, ...wordProgress[key] });
                 }
             }
 
-            // 2. 如果大家都還沒到複習時間，就挑選「盒子等級最低（最不熟）」的單字提早複習
+            // 2. 如果該模式下時間都沒到，就選該模式中盒子等級最低的
             if (candidates.length === 0) {
                 let minBox = 6;
-                for (let idx in wordProgress) {
-                    if (wordProgress[idx].box < minBox) {
-                        minBox = wordProgress[idx].box;
+                for (let key in wordProgress) {
+                    if (key.endsWith(currentMode) && wordProgress[key].box < minBox) {
+                        minBox = wordProgress[key].box;
                     }
                 }
-                for (let idx in wordProgress) {
-                    if (wordProgress[idx].box === minBox) {
-                        candidates.push({ idx: parseInt(idx), ...wordProgress[idx] });
+                for (let key in wordProgress) {
+                    if (key.endsWith(currentMode) && wordProgress[key].box === minBox) {
+                        candidates.push({ key: key, ...wordProgress[key] });
                     }
                 }
             }
 
-            // 3. 從候選名單中隨機抽一個，避免每次順序固定
             const randomPick = candidates[Math.floor(Math.random() * candidates.length)];
-            currentWordIndex = randomPick.idx;
+            currentKey = randomPick.key;
 
             renderCard();
             updateStats();
         }
 
-        // 渲染卡片內容
         function renderCard() {
-            const word = rawVocabDb[currentWordIndex];
+            const wordIdx = parseInt(currentKey.split("_")[0]);
+            const word = rawVocabDb[wordIdx];
             const cardEl = document.getElementById('card');
             
-            // 重置翻面狀態
             isFlipped = false;
             cardEl.classList.remove('flipped');
             document.getElementById('btnShow').classList.remove('hidden');
             document.getElementById('scoreBtns').classList.add('hidden');
 
             if (currentMode === 'en-to-zh') {
-                // 正面英文、反面中文
                 document.getElementById('frontText').innerText = word.en;
                 document.getElementById('frontText').classList.remove('zh');
                 document.getElementById('frontPhonetic').innerText = word.phonetic;
@@ -413,7 +409,6 @@
                 document.getElementById('backTranslation').innerText = word.zh;
                 document.getElementById('backExample').innerText = "💡 例句：\n" + word.ex;
             } else {
-                // 正面中文、反面英文
                 document.getElementById('frontText').innerText = word.zh;
                 document.getElementById('frontText').classList.add('zh');
                 document.getElementById('frontPhonetic').innerText = "";
@@ -424,14 +419,11 @@
             }
         }
 
-        // 翻轉卡片
         function flipCard() {
             if (isFlipped) {
-                // 如果已經翻開，點擊可翻回正面
                 document.getElementById('card').classList.remove('flipped');
                 isFlipped = false;
             } else {
-                // 翻至背面顯示答案
                 document.getElementById('card').classList.add('flipped');
                 isFlipped = true;
                 document.getElementById('btnShow').classList.add('hidden');
@@ -439,68 +431,62 @@
             }
         }
 
-        // 使用者自我評估熟練度
-        // score: 1 = 不會/錯, 3 = 模糊, 5 = 很熟練
         function scoreWord(score) {
-            const progress = wordProgress[currentWordIndex];
+            const progress = wordProgress[currentKey];
             const now = Date.now();
             let delayMinutes = 1;
 
             if (score === 1) {
-                progress.box = 1;
-                progress.wrongCount += 1;
-                delayMinutes = 0.5; // 半分鐘後再次出現，加深印象
-            } else if (score === 3) {
-                // 模糊：稍微拉開一點時間 (例：5分鐘)
-                progress.box = Math.max(1, progress.box);
-                delayMinutes = 5;
-            } else if (score === 5) {
-                // 熟練：提升盒子等級，並按曲線拉長時間
-                progress.box = Math.min(5, progress.box + 1);
-                // 根據盒子等級決定下一次出現的時間間隔（模擬記憶曲線）
-                // 盒子 2: 30分鐘, 3: 4小時, 4: 1天, 5: 4天
-                const intervals = [1, 30, 240, 1440, 5760];
-                delayMinutes = intervals[progress.box - 1];
+                progress.box = 1; // 歸回第一盒（不計入已掌握）
+                delayMinutes = 0.5; 
+            } else {
+                if (score === 2) {
+                    progress.box = Math.max(2, progress.box); // 保底 Box 2 算入進度條
+                    delayMinutes = 5;
+                } else if (score === 4) {
+                    progress.box = Math.min(5, progress.box + 1);
+                    const intervals = [1, 20, 120, 1440, 5760];
+                    delayMinutes = intervals[progress.box - 1];
+                } else if (score === 5) {
+                    progress.box = Math.min(5, progress.box + 2);
+                    const intervals = [5, 60, 360, 2880, 10080];
+                    delayMinutes = intervals[progress.box - 1];
+                }
             }
 
-            // 設定下一次可以複習的時間
             progress.nextReview = now + (delayMinutes * 60 * 1000);
-            
             saveData();
             pickNextWord();
         }
 
-        // 更新進度條與數據統計
         function updateStats() {
-            let totalWords = rawVocabDb.length;
-            let masterWords = 0; // 盒子等級大於等於 4 的算熟練
+            let totalTasks = 110; // 全模式總題數共 110 個節點
+            let masteredTasks = 0;
 
-            for (let idx in wordProgress) {
-                if (wordProgress[idx].box >= 4) {
-                    masterWords++;
+            // 🌟 核心更新：只要盒子等級大於或等於 2，代表至少答對/認得一次，就加入進度條
+            for (let key in wordProgress) {
+                if (wordProgress[key].box >= 2) {
+                    masteredTasks++;
                 }
             }
 
-            const percent = Math.round((masterWords / totalWords) * 100);
+            const percent = Math.round((masteredTasks / totalTasks) * 100);
             document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('statsText').innerText = `總單字量: ${totalWords} | 高熟練度: ${masterWords} (${percent}%)`;
+            document.getElementById('statsText').innerText = `${masteredTasks}/${totalTasks} 題已掌握 (${percent}%)`;
         }
 
-        // 切換 模式 (英翻中 / 中翻英)
         function changeMode() {
             currentMode = document.getElementById('modeSelect').value;
-            renderCard();
+            pickNextWord();
         }
 
-        // 重置所有進度
         function resetData() {
             if (confirm("確定要重置所有單字的記憶曲線與錯誤紀錄嗎？")) {
-                localStorage.removeItem('vocab_progress_v1');
+                localStorage.removeItem('vocab_flashcard_progress_v5');
                 init();
             }
         }
 
-        // 啟動
         window.onload = init;
     </script>
 </body>
