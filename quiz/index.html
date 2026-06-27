@@ -8,6 +8,7 @@
         :root {
             --primary-color: #3498db;
             --success-color: #2ecc71;
+            --warning-color: #f1c40f;
             --danger-color: #e74c3c;
             --neutral-color: #34495e;
             --bg-color: #f8f9fa;
@@ -51,6 +52,8 @@
             gap: 10px;
             font-size: 0.85rem;
             color: #7f8c8d;
+            width: 100%;
+            max-width: 500px;
         }
 
         .progress-bar {
@@ -169,6 +172,7 @@
             color: #7f8c8d;
             margin-bottom: 8px;
             font-style: italic;
+            white-space: pre-line;
         }
 
         .analysis {
@@ -194,11 +198,13 @@
             text-align: center;
             font-size: 0.9rem;
             font-weight: bold;
+            margin-bottom: 4px;
         }
 
         .btn-row {
             display: flex;
             gap: 10px;
+            width: 100%;
         }
 
         .btn {
@@ -213,19 +219,23 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        .btn-again { background-color: #e67e22; }
+        .btn-wrong-action { background-color: var(--danger-color); width: 100%; }
+        .btn-medium { background-color: var(--warning-color); color: #333; }
+        .btn-good { background-color: var(--primary-color); }
         .btn-easy { background-color: var(--success-color); }
+        
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>📝 智慧英文填空選擇題</h1>
+        <h1>📝 高中英文核心單字測驗 (總題數版)</h1>
         <div class="progress-container">
             <div class="progress-bar">
                 <div id="progressFill" class="progress-fill"></div>
             </div>
-            <span id="statsText">0%</span>
+            <span id="statsText">0/110 (0%)</span>
             <button class="reset-btn" onclick="resetData()">重置</button>
         </div>
     </header>
@@ -241,213 +251,152 @@
     </div>
 
     <div id="nextContainer" class="next-container">
-        <div id="feedbackTitle" class="feedback-title">請評估此單字的熟練度以排入記憶曲線：</div>
-        <div class="btn-row">
-            <button id="btnAgain" class="btn btn-again" onclick="submitLevel(1)">❌ 答錯/再試一次</button>
-            <button id="btnEasy" class="btn btn-easy" onclick="submitLevel(5)">✅ 輕鬆掌握</button>
+        <div id="feedbackTitle" class="feedback-title">請評估此題的熟練度：</div>
+        
+        <button id="wrongActionBtn" class="btn btn-wrong-action hidden" onclick="submitLevel(1)">❌ 答錯了，排入錯題重練</button>
+        
+        <div id="correctActionRow" class="btn-row hidden">
+            <button class="btn btn-medium" onclick="submitLevel(2)">🔺 勉強答對</button>
+            <button class="btn btn-good" onclick="submitLevel(4)">👍 順利掌握</button>
+            <button class="btn btn-easy" onclick="submitLevel(5)">✅ 輕鬆掌握</button>
         </div>
     </div>
 
     <script>
-        // 核心題庫：高一至高二程度，每個單字配有 2 個填空情境句
+        // 攤平後的完整 110 題庫（每單字各2題獨立計算進度）
         const quizDatabase = [
-            {
-                word: "dignity",
-                sentence1: "The old king maintained his _______ even after he was forced to give up his throne.",
-                options1: ["dignity", "poverty", "passenger", "leather"],
-                trans1: "老國王即使在被迫放棄王位後，依然保持著他的尊嚴。",
-                sentence2: "It is beneath your _______ to cheat in a high school examination.",
-                options2: ["dignity", "authority", "partner", "fever"],
-                trans2: "在高中考試中作弊是有損你尊嚴的。"
-            },
-            {
-                word: "volunteer",
-                sentence1: "Every summer, Jenny decides to _______ at the local animal shelter to help stray dogs.",
-                options1: ["volunteer", "calculate", "devise", "assemble"],
-                trans1: "每年夏天，珍妮都決定在當地的動物收容所當志工來幫助流浪狗。",
-                sentence2: "The clinic is looking for a _______ to assist with administrative work on weekends.",
-                options2: ["volunteer", "settler", "beggar", "host"],
-                trans2: "這家診所正在尋找一名志工，以便在週末協助行政工作。"
-            },
-            {
-                word: "leather",
-                sentence1: "This premium jacket is made of genuine _______, making it both durable and expensive.",
-                options1: ["leather", "poverty", "strategy", "permission"],
-                trans1: "這件高級外套是由真皮製成的，因此既耐用又昂貴。",
-                sentence2: "She bought a vintage _______ sofa that perfectly matches the classic style of her living room.",
-                options2: ["leather", "domestic", "freezing", "suitable"],
-                trans2: "她買了一款復古皮沙發，完美搭配她客廳的古典風格。"
-            },
-            {
-                word: "exact",
-                sentence1: "Can you give me the _______ time when the package will be delivered tomorrow?",
-                options1: ["exact", "historical", "domestic", "similarly"],
-                trans1: "你能告訴我明天包裹送達的確切時間嗎？",
-                sentence2: "The scientists need _______ measurements to ensure the experiment succeeds.",
-                options2: ["exact", "freezing", "unusual", "desperate"],
-                trans2: "科學家們需要精確的測量數據以確保實驗成功。"
-            },
-            {
-                word: "partner",
-                sentence1: "Our tech firm has decided to _______ with a top college to develop advanced AI models.",
-                options1: ["partner", "recover", "introduce", "calculate"],
-                trans1: "我們的科技公司已決定與一所頂尖大學合作，開發先進的人工智慧模型。",
-                sentence2: "You need to find a reliable business _______ if you want to open a restaurant.",
-                options2: ["partner", "passenger", "settler", "beggar"],
-                trans2: "如果你想開一家餐廳，你需要找到一個可靠的商業夥伴。"
-            },
-            {
-                word: "assemble",
-                sentence1: "The principal requested all students to _______ in the main gymnasium for the assembly.",
-                options1: ["assemble", "devise", "recover", "diverge"],
-                trans1: "校長要求所有學生在主體育館集合召開集會。",
-                sentence2: "It took my brother nearly three hours to _______ the complex Lego spaceship.",
-                options2: ["assemble", "increase", "project", "spread"],
-                trans2: "我哥哥花了將近三個小時才組裝好那個複雜的樂高太空船。"
-            },
-            {
-                word: "suitable",
-                sentence1: "Jeans and T-shirts are not considered _______ attire for a formal job interview.",
-                options1: ["suitable", "domestic", "exact", "magnificent"],
-                trans1: "牛仔褲和T恤不被認為是正式求職面試的合適服裝。",
-                sentence2: "The movie is rated PG, meaning it is _______ for teenagers but maybe not for young kids.",
-                options2: ["suitable", "freezing", "historical", "desperate"],
-                trans2: "這部電影被評為輔導級，意味著它適合青少年，但可能不適合幼童。"
-            },
-            {
-                word: "permission",
-                sentence1: "You cannot use the company's official logo without written _______ from the manager.",
-                options1: ["permission", "authority", "dignity", "strategy"],
-                trans1: "未經經理的書面許可，您不能使用公司的官方標誌。",
-                sentence2: "The teacher gave Tim _______ to leave the classroom early because he felt sick.",
-                options2: ["permission", "poverty", "partnership", "fever"],
-                trans2: "老師准許提姆提早離開教室，因為他覺得身體不舒服。"
-            },
-            {
-                word: "authority",
-                sentence1: "Medical experts are considered the ultimate _______ on health-related matters.",
-                options1: ["authority", "volunteer", "passenger", "settler"],
-                trans1: "醫學專家被認為是健康相關事務的最終權威。",
-                sentence2: "The local _______ decided to install more streetlights to improve night safety.",
-                options2: ["authorities", "strategies", "partnerships", "differences"],
-                trans2: "地方當局決定安裝更多路燈以提高夜間安全。"
-            },
-            {
-                word: "poverty",
-                sentence1: "The government launched a new project aimed at reducing child _______ in rural areas.",
-                options1: ["poverty", "leather", "dignity", "permission"],
-                trans1: "政府啟動了一項旨在減少農村地區兒童貧困的新計畫。",
-                sentence2: "Growing up in extreme _______ taught the successful businessman the value of hard work.",
-                options2: ["poverty", "authority", "strategy", "balance"],
-                trans2: "在極度貧困中長大，讓這位成功的商人學到了努力工作的價值。"
-            },
-            {
-                word: "historical",
-                sentence1: "The museum contains many valuable _______ documents from the American Civil War.",
-                options1: ["historical", "suitable", "domestic", "current"],
-                trans1: "這家博物館藏有許多來自美國南北戰爭的珍貴歷史文獻。",
-                sentence2: "We need to analyze this event from a _______ perspective to understand its impact.",
-                options2: ["historical", "freezing", "exact", "positive"],
-                trans2: "我們 need 從歷史的角度來分析這起事件，以了解其影響。"
-            },
-            {
-                word: "recover",
-                sentence1: "It took the young athlete almost six months to _______ fully from the knee surgery.",
-                options1: ["recover", "devise", "calculate", "introduce"],
-                trans1: "這位年輕的運動員花了將近六個月的時間才從膝蓋手術中完全復原。",
-                sentence2: "The IT experts managed to _______ all the lost data from the damaged hard drive.",
-                options2: ["recover", "assemble", "project", "spread"],
-                trans2: "資訊專家成功從受損的硬碟中救回了所有遺失的數據。"
-            },
-            {
-                word: "devise",
-                sentence1: "The marketing team needs to _______ a creative strategy to attract teenage customers.",
-                options1: ["devise", "calculate", "volunteer", "partner"],
-                trans1: "行銷團隊需要策劃出一個有創意的策略來吸引青少年顧客。",
-                sentence2: "Engineers are trying to _______ a safer method for disposing of industrial waste.",
-                options2: ["devise", "assemble", "increase", "spread"],
-                trans2: "工程師們正在努力想出一種更安全的方法來處理工業廢棄物。"
-            },
-            {
-                word: "strategy",
-                sentence1: "To pass the advanced exam, you need a smart study _______ rather than just memorizing facts.",
-                options1: ["strategy", "permission", "leather", "poverty"],
-                trans1: "要通過這項高級考試，你需要聰明的讀書策略，而不僅僅是死記硬背。",
-                sentence2: "The company’s global growth _______ focused heavily on online advertising.",
-                options2: ["strategy", "authority", "dignity", "passenger"],
-                trans2: "該公司的全球成長策略非常注重網路廣告。"
-            },
-            {
-                word: "calculate",
-                sentence1: "Students are allowed to use a digital device to _______ the total surface area of the cone.",
-                options1: ["calculate", "devise", "recover", "introduce"],
-                trans1: "學生被允許使用數位裝置來計算圓錐體的總表面積。",
-                selection2: "It is difficult to _______ the precise economic damage caused by the massive typhoon.",
-                options2: ["calculate", "project", "increase", "balance"],
-                trans2: "很難估計這場強烈颱風所造成的確切經濟損失。"
-            },
-            {
-                word: "positive",
-                sentence1: "Maintaining a _______ attitude can help you overcome high school academic stress.",
-                options1: ["positive", "historical", "freezing", "desperate"],
-                trans1: "保持積極的態度可以幫助你克服高中的學業壓力。",
-                sentence2: "The new educational policy received highly _______ feedback from both parents and teachers.",
-                options2: ["positive", "domestic", "suitable", "exact"],
-                trans2: "這項新的教育政策獲得了家長和老師高度正面的回饋。"
-            },
-            {
-                word: "increase",
-                sentence1: "The restaurant hopes to _______ its sales by introducing a new online food ordering service.",
-                options1: ["increase", "recover", "calculate", "devise"],
-                trans1: "這家餐廳希望透過引進新的線上點餐服務來增加銷量。",
-                sentence2: "There has been a steady _______ in the number of tourists visiting the historic town recently.",
-                options2: ["increase", "poverty", "permission", "authority"],
-                trans2: "最近造訪這座歷史名鎮的遊客人數出現了穩步增長。"
-            },
-            {
-                word: "domestic",
-                sentence1: "Flights from Taipei to Kaohsiung belong to _______ aviation routes rather than international ones.",
-                options1: ["domestic", "historical", "positive", "suitable"],
-                trans1: "台北飛往高雄的航班屬於國內航線，而非國際航線。",
-                sentence2: "Cats and dogs are common _______ animals that have lived with humans for thousands of years.",
-                options2: ["domestic", "exact", "freezing", "unusual"],
-                trans2: "貓和狗是常見的馴養動物，已經與人類共同生活了數千年。"
-            },
-            {
-                word: "desperate",
-                sentence1: "After wandering in the desert for two days, the travelers were _______ for fresh water.",
-                options1: ["desperate", "suitable", "positive", "domestic"],
-                trans1: "在沙漠中徘徊兩天后，這些旅人迫切需要淡水。",
-                sentence2: "The company made a _______ attempt to save its failing project by hiring an expert.",
-                options2: ["desperate", "historical", "exact", "freezing"],
-                trans2: "該公司透過雇用一名專家，做出了挽救其失敗專案的孤注一擲的嘗試。"
-            },
-            {
-                word: "balance",
-                sentence1: "It is crucial for senior high school students to maintain a healthy _______ between study and rest.",
-                options1: ["balance", "strategy", "permission", "poverty"],
-                trans1: "對於高中生來說，在學習和休息之間保持健康的平衡至關重要。",
-                sentence2: "The gymnast managed to keep her _______ perfectly on the narrow wooden beam.",
-                options2: ["balance", "dignity", "authority", "partner"]
-                trans2: "體操運動員成功地在狹窄的木樑上完美保持了平衡。"
-            }
+            { word: "dignity", sentence: "The old king maintained his _______ even after he was forced to give up his throne.", options: ["dignity", "poverty", "passenger", "leather"], trans: "老國王即使在被迫放棄王位後，依然保持著他的尊嚴。" },
+            { word: "dignity", sentence: "It is beneath your _______ to cheat in a high school examination.", options: ["dignity", "authority", "partner", "fever"], trans: "在高中考試中作弊是有損你尊嚴的。" },
+            { word: "dignify", sentence: "The elegant silver frame helped to _______ the simple family photograph.", options: ["dignify", "calculate", "devise", "assemble"], trans: "優雅的銀色相框有助於使這張簡單的家庭照片顯得高貴。" },
+            { word: "dignify", sentence: "The university decided to _______ the ceremony by inviting a Nobel Prize winner.", options: ["dignify", "recover", "introduce", "partner"], trans: "大學決定邀請一位諾貝爾獎得主來增加這場典禮的尊嚴與光彩。" },
+            { word: "dignified", sentence: "Chris answered the rude question in a calm and _______ manner.", options: ["dignified", "historical", "freezing", "suitable"], trans: "克里斯以平靜且有尊嚴的方式回答了那個無禮的問題。" },
+            { word: "dignified", sentence: "The judge looked very _______ in his official black robes.", options: ["dignified", "domestic", "desperate", "positive"], trans: "法官穿著正式的黑色官袍，看起來非常威嚴。" },
+            { word: "undignified", sentence: "It was _______ for the mature manager to argue loudly with the customer.", options: ["undignified", "exact", "positive", "suitable"], trans: "成熟的經理與顧客大聲爭吵是毫無尊嚴且失態的。" },
+            { word: "undignified", sentence: "She found herself in an _______ position when she tripped and fell onto the grass.", options: ["undignified", "historical", "current", "precise"], trans: "當她絆倒並摔在草地上時，她發現自己處於一個狼狽、不雅觀的姿態。" },
+            { word: "volunteer", sentence: "Every summer, Jenny decides to _______ at the local animal shelter to help stray dogs.", options: ["volunteer", "calculate", "devise", "assemble"], trans: "每年夏天，珍妮都決定在當地的動物收容所當志工來幫助流浪狗。" },
+            { word: "volunteer", sentence: "The clinic is looking for a _______ to assist with administrative work on weekends.", options: ["volunteer", "settler", "beggar", "host"], trans: "這家診所正在尋找一名志工，以便在週末協助行政工作。" },
+            { word: "do volunteer work", sentence: "Many retired teachers love to _______ at elementary schools in their free time.", options: ["do volunteer work", "make a difference", "get rid of", "zone out"], trans: "許多退休教師喜歡在閒暇時間到小學做志工服務。" },
+            { word: "do volunteer work", sentence: "Kevin decided to _______ in the hospital to gain medical experience.", options: ["do volunteer work", "shoot up", "settle down", "return"], trans: "凱文決定在醫院做義工以獲取醫療經驗。" },
+            { word: "leather", sentence: "This premium jacket is made of genuine _______, making it both durable and expensive.", options: ["leather", "poverty", "strategy", "permission"], trans: "這件高級外套是由真皮製成的，因此既耐用又昂貴。" },
+            { word: "leather", sentence: "She bought a vintage _______ sofa that perfectly matches the classic style of her living room.", options: ["leather", "domestic", "freezing", "suitable"], trans: "她買了一款復古皮沙發，完美搭配她客廳的古典風格。" },
+            { word: "exact", sentence: "Can you give me the _______ time when the package will be delivered tomorrow?", options: ["exact", "historical", "domestic", "similarly"], trans: "你能告訴我明天包裹送達的確切時間嗎？" },
+            { word: "exact", sentence: "The exact cost of the project is still unknown until we review all receipts.", options: ["exact", "freezing", "unusual", "desperate"], trans: "在我們審查所有收據之前，這項計畫的確切成本仍然未知。" },
+            { word: "precise", sentence: "The scientist gave _______ measurements to ensure the experiment could be repeated.", options: ["precise", "suitable", "domestic", "unusual"], trans: "科學家給出了精確的測量數據，以確保實驗可以被重複。" },
+            { word: "precise", sentence: "At that _______ moment, the clock struck midnight and the lights went out.", options: ["precise", "desperate", "freezing", "historical"], trans: "就在那一精確的時刻，時鐘敲響了午夜，燈光隨之熄滅。" },
+            { word: "exactly", sentence: "That is _______ what I meant, and I am glad you understand my position.", options: ["exactly", "similarly", "afterwards", "altogether"], trans: "那正是我的意思，很高興你理解我的立場。" },
+            { word: "exactly", sentence: "The two digital clocks are _______ aligned to the same international network server.", options: ["exactly", "regularly", "permanently", "increasingly"], trans: "這兩個數位時鐘精準地與同一個國際網路伺服器對齊。" },
+            { word: "not exactly", sentence: "It's _______ a secret, but we would prefer if you didn't tell everyone yet.", options: ["not exactly", "altogether", "similarly", "afterwards"], trans: "這不完全是個秘密，但我們希望你先不要告訴大家。" },
+            { word: "not exactly", sentence: "A: Is your new apartment big? B: _______, but it's very cozy for one person.", options: ["not exactly", "whenever", "altogether", "similarly"], trans: "A: 你的新公寓大嗎？ B: 不完全算大，但對一個人來說非常溫馨舒適。" },
+            { word: "partner", sentence: "Our tech firm has decided to _______ with a top college to develop advanced AI models.", options: ["partner", "recover", "introduce", "calculate"], trans: "我們的科技公司已決定與一所頂尖大學合作，開發先進的人工智慧模型。" },
+            { word: "partner", sentence: "You need to find a reliable business _______ if you want to open a restaurant.", options: ["partner", "passenger", "settler", "beggar"], trans: "如果你想開一家餐廳，你需要找到一個可靠的商業夥伴。" },
+            { word: "partnership", sentence: "The two local companies formed a strong _______ to build the high-speed rail.", options: ["partnership", "permission", "authority", "strategy"], trans: "這邊兩家地方公司建立了強固的合夥關係來建造高速鐵路。" },
+            { word: "partnership", sentence: "A successful marriage requires a lifelong _______ based on mutual trust.", options: ["partnership", "dignity", "poverty", "leather"], trans: "成功的婚姻需要建立在相互信任之上的終身夥伴關係。" },
+            { word: "assemble", sentence: "The principal requested all students to _______ in the main gymnasium for the assembly.", options: ["assemble", "devise", "recover", "calculate"], trans: "校長要求所有學生在主體育館集合召開集會。" },
+            { word: "assemble", sentence: "It took my brother nearly three hours to _______ the complex Lego spaceship.", options: ["assemble", "increase", "project", "spread"], trans: "我哥哥花了將近三個小時才組裝好那個複雜的樂高太空船。" },
+            { word: "assembly line", sentence: "Workers on the automotive _______ must focus intensely on installing parts correctly.", options: ["assembly line", "comfort zone", "time zone", "sales force"], trans: "汽車生產線上的工人必須高度專注於正確安裝零件。" },
+            { word: "assembly line", sentence: "Automation has allowed factories to speed up production on the _______.", options: ["assembly line", "poverty line", "comfort zone", "time zone"], trans: "自動化使得工廠能夠加快生產線上的製造速度。" },
+            { word: "suitable", sentence: "Jeans and T-shirts are not considered _______ attire for a formal job interview.", options: ["suitable", "domestic", "exact", "positive"], trans: "牛仔褲和T恤不被認為是正式求職面試的合適服裝。" },
+            { word: "suitable", sentence: "The movie is rated PG, meaning it is _______ for teenagers but maybe not for young kids.", options: ["suitable", "freezing", "historical", "desperate"], trans: "這部電影被評為輔導級，意味著它適合青少年，但可能不適合幼童。" },
+            { word: "permission", sentence: "You cannot use the company's official logo without written _______ from the manager.", options: ["permission", "authority", "dignity", "strategy"], trans: "未經經理的書面許可，您不能使用公司的官方標誌。" },
+            { word: "permission", sentence: "The teacher gave Tim _______ to leave the classroom early because he felt sick.", options: ["permission", "poverty", "partnership", "fever"], trans: "老師准許提姆提早離開教室，因為他覺得身體不舒服。" },
+            { word: "authority", sentence: "Medical experts are considered the ultimate _______ on health-related matters.", options: ["authority", "volunteer", "passenger", "settler"], trans: "醫學專家被認為是健康相關事務的最終權威。" },
+            { word: "authority", sentence: "The local _______ decided to install more streetlights to improve night safety.", options: ["authority", "strategy", "partnership", "difference"], trans: "地方當局決定安裝更多路燈以提高夜間安全。" },
+            { word: "poster", sentence: "She put up a huge colorful _______ of her favorite K-pop band on her bedroom wall.", options: ["poster", "authority", "dignity", "leather"], trans: "她在臥室牆上貼了一張她最喜歡的韓國流行樂團的巨幅彩色海報。" },
+            { word: "poster", sentence: "The event organizers printed a beautiful _______ to advertise the upcoming music festival.", options: ["poster", "poverty", "permission", "partner"], trans: "活動主辦方印製了一張精美的海報來為即將到來的音樂節做廣告。" },
+            { word: "host", sentence: "Taiwan has previously played _______ to several major international sports events.", options: ["host", "partner", "volunteer", "settler"], trans: "台灣先前曾主辦過數項大型國際體育賽事。" },
+            { word: "host", sentence: "The friendly _______ welcomed the guests warmly at the entrance of the hotel.", options: ["host", "passenger", "beggar", "authority"], trans: "親切的主人在飯店入口處熱情地迎接賓客。" },
+            { word: "poverty", sentence: "The government launched a new project aimed at reducing child _______ in rural areas.", options: ["poverty", "leather", "dignity", "permission"], trans: "政府啟動了一項旨在減少農村地區兒童貧困的新計畫。" },
+            { word: "poverty", sentence: "Growing up in extreme _______ taught the successful businessman the value of hard work.", options: ["poverty", "authority", "strategy", "balance"], trans: "在極度貧困中長大，讓這位成功的商人學到了努力工作的價值。" },
+            { word: "historical", sentence: "The museum contains many valuable _______ documents from the American Civil War.", options: ["historical", "suitable", "domestic", "current"], trans: "這家博物館藏有許多來自美國南北戰爭的珍貴歷史文獻。" },
+            { word: "historical", sentence: "We need to analyze this event from a _______ perspective to understand its impact.", options: ["historical", "freezing", "exact", "positive"], trans: "我們需要從歷史的角度來分析這起事件，以了解其影響。" },
+            { word: "historic", sentence: "It was a _______ moment when the two nations signed the peace treaty after decades of war.", options: ["historic", "suitable", "domestic", "exact"], trans: "在數十年的戰爭後，兩國簽署和平條約，那是一個具有歷史意義的時刻。" },
+            { word: "historic", sentence: "The city center is filled with _______ buildings that are protected by strict preservation laws.", options: ["historic", "freezing", "positive", "desperate"], trans: "市中心充滿了受嚴格保護法保護的具歷史意義的古老建築。" },
+            { word: "female", sentence: "There has been an increase in the number of _______ engineering students in recent years.", options: ["female", "domestic", "suitable", "historical"], trans: "近年來，女性工程系學生的數量有所增加。" },
+            { word: "female", sentence: "In some bird species, the _______ is much less colorful than the male.", options: ["female", "adult", "partner", "passenger"], trans: "在某些鳥類中，雌鳥的顏色遠不如雄鳥鮮豔。" },
+            { word: "dive", sentence: "The brave lifeguard was ready to _______ into the deep ocean to save the drowning child.", options: ["dive", "assemble", "devise", "recover"], trans: "勇敢的救生員準備好跳進深海去營救溺水的孩子。" },
+            { word: "dive", sentence: "Spectators cheered as the Olympic swimmer executed a perfect _______ from the high platform.", options: ["dive", "increase", "project", "spread"], trans: "當奧運游泳選手從高台做出完美的跳水動作時，觀眾們歡呼了。" },
+            { word: "freezing", sentence: "Make sure to wear a heavy coat because it is absolutely _______ outside tonight.", options: ["freezing", "suitable", "positive", "domestic"], trans: "一定要穿件厚外套，因為今天晚上外面絕對是冷到結冰的程度。" },
+            { word: "freezing", sentence: "The water in the mountain lake was near _______ temperatures even during the summer.", options: ["freezing", "historical", "exact", "precise"], trans: "即使在夏天，高山湖泊中的水溫也接近冰點。" },
+            { word: "similarly", sentence: "The first experiment failed; _______, the second trial yielded no positive results.", options: ["similarly", "exactly", "afterwards", "altogether"], trans: "第一個實驗失敗了；同樣地，第二次試驗也沒有產生任何正面的結果。" },
+            { word: "similarly", sentence: "All employees must attend the training, and _______, part-time workers are expected to participate.", options: ["similarly", "regularly", "permanently", "currently"], trans: "所有正職員工都必須參加訓練，同樣地，兼職人員也被期望參與。" },
+            { word: "difference", sentence: "Can you explain the main _______ between an optical satellite and a radar satellite?", options: ["difference", "authority", "permission", "partnership"], trans: "你能解釋光學衛星和雷達衛星之間的主要差異嗎？" },
+            { word: "difference", sentence: "The heavy rain made a huge _______ to the local reservoir water levels.", options: ["difference", "dignity", "strategy", "poverty"], trans: "這場大雨對當地水庫的水位產生了巨大的（改善）作用。" },
+            { word: "make a difference", sentence: "Volunteering every weekend can really _______ to the lives of homeless people.", options: ["make a difference", "get rid of", "zone out", "do volunteer work"], trans: "每個週末做志工真的能為無家可歸者的生活帶來改變。" },
+            { word: "make a difference", sentence: "Your generous donation will _______ to our school funding this semester.", options: ["make a difference", "settle down", "shoot for", "separate out"], trans: "您的慷慨捐款將顯著改善我們本學期的學校經費情況。" },
+            { word: "zone", sentence: "The city council designated this beautiful coastal area as a protected green _______.", options: ["zone", "poverty", "leather", "dignity"], trans: "市議會將這個美麗的海岸地區指定為受保護的綠色區域。" },
+            { word: "zone", sentence: "Vehicles must drive very slowly when entering a designated school _______.", options: ["zone", "authority", "strategy", "partner"], trans: "車輛在進入指定的學校區域時幕必須行駛得非常緩慢。" },
+            { word: "zone out", sentence: "The lecture was so long and boring that I began to _______ after twenty minutes.", options: ["zone out", "recover", "devise", "calculate"], trans: "這場講座太長且太無聊了，以至於二十分鐘後我開始恍神。" },
+            { word: "zone out", sentence: "Be careful not to _______ while driving on the busy highway.", options: ["zone out", "settle down", "return", "assemble"], trans: "在繁忙的高速公路上開車時，千萬注意不要精神不集中發呆。" },
+            { word: "recover", sentence: "It took the young athlete almost six months to _______ fully from the knee surgery.", options: ["recover", "devise", "calculate", "introduce"], trans: "這位年輕的運動員花了將近六個月的時間才從膝蓋手術中完全復原。" },
+            { word: "recover", sentence: "The IT experts managed to _______ all the lost data from the damaged hard drive.", options: ["recover", "assemble", "project", "spread"], trans: "資訊專家成功從受損的硬碟中救回了所有遺失的數據。" },
+            { word: "devise", sentence: "The marketing team needs to _______ a creative strategy to attract teenage customers.", options: ["devise", "calculate", "volunteer", "partner"], trans: "行銷團隊需要策劃出一個有創意的策略來吸引青少年顧客。" },
+            { word: "devise", sentence: "Engineers are trying to _______ a safer method for disposing of industrial waste.", options: ["devise", "assemble", "increase", "spread"], trans: "工程師們正在努力想出一種更安全的方法來處理工業廢棄物。" },
+            { word: "strategy", sentence: "To pass the advanced exam, you need a smart study _______ rather than just memorizing facts.", options: ["strategy", "permission", "leather", "poverty"], trans: "要通過這項高級考試，你需要聰明的讀書策略，而不僅僅是死記硬背。" },
+            { word: "strategy", sentence: "The company’s global growth _______ focused heavily on online advertising.", options: ["strategy", "authority", "dignity", "passenger"], trans: "該公司的全球成長策略非常注重網路廣告。" },
+            { word: "passenger", sentence: "The flight attendant asked every _______ to fasten their seatbelts due to turbulence.", options: ["passenger", "volunteer", "settler", "beggar"], trans: "由於亂流，空服員要求每位乘客繫好安全帶。" },
+            { word: "passenger", sentence: "The train was crowded with commuters, leaving no room for any new _______.", options: ["passenger", "host", "authority", "partner"], trans: "火車上擠滿了通勤族，沒有空間容納任何新乘客。" },
+            { word: "calculate", sentence: "Students are allowed to use a digital device to _______ the total surface area of the cone.", options: ["calculate", "devise", "recover", "introduce"], trans: "學生被允許使用數位裝置來計算圓錐體的總表面積。" },
+            { word: "calculate", sentence: "It is difficult to _______ the precise economic damage caused by the massive typhoon.", options: ["calculate", "project", "increase", "balance"], trans: "很難估計這場強烈颱風所造成的確切經濟損失。" },
+            { word: "whenever", sentence: "_______ I visit Taipei, I always make sure to eat at my favorite night market.", options: ["whenever", "altogether", "similarly", "afterwards"], trans: "每當我造訪台北時，我總是必定會去我最喜歡的夜市吃美食。" },
+            { word: "whenever", sentence: "Please feel free to call our customer support service _______ you encounter an issue.", options: ["whenever", "exactly", "regularly", "permanently"], trans: "不論何時只要您遇到問題，請隨時致電我們的客戶支援服務。" },
+            { word: "fever", sentence: "The child had a high _______ last night, so his worried parents took him to the ER.", options: ["fever", "poverty", "leather", "dignity"], trans: "孩子昨晚發高燒，因此他焦急的父母帶他去了急診室。" },
+            { word: "fever", sentence: "Drinking plenty of water and resting is essential when trying to fight off a _______.", options: ["fever", "strategy", "permission", "partnership"], trans: "努力退燒時，多喝水與休息是至關重要的。" },
+            { word: "positive", sentence: "Maintaining a _______ attitude can help you overcome high school academic stress.", options: ["positive", "historical", "freezing", "desperate"], trans: "保持積極的態度可以幫助你克服高中的學業壓力。" },
+            { word: "positive", sentence: "The new educational policy received highly _______ feedback from both parents and teachers.", options: ["positive", "domestic", "suitable", "exact"], trans: "這項新的教育政策獲得了家長和老師高度正面的回饋。" },
+            { word: "increase", sentence: "The restaurant hopes to _______ its sales by introducing a new online food ordering service.", options: ["increase", "recover", "calculate", "devise"], trans: "這家餐廳希望透過引進新的線上點餐服務來增加銷量。" },
+            { word: "increase", sentence: "There has been a steady _______ in the number of tourists visiting the historic town recently.", options: ["increase", "poverty", "permission", "authority"], trans: "最近造訪這座歷史名鎮的遊客人數出現了穩步增長。" },
+            { word: "project", sentence: "Our high school science group is working on a major research _______ about water pollution.", options: ["project", "strategy", "permission", "authority"], trans: "我們高中的科學小組正在進行一項關於水污染的大型研究計畫。" },
+            { word: "project", sentence: "Experts _______ that the world's population will reach its peak in the coming decades.", options: ["project", "calculate", "devise", "assemble"], trans: "專家們預測，世界人口將在未來幾十年內達到頂峰。" },
+            { word: "current", sentence: "Under the _______ school regulations, students must wear their uniforms on Mondays.", options: ["current", "historical", "suitable", "positive"], trans: "在現行的學校規定下，學生每週一必須穿制服。" },
+            { word: "current", sentence: "The strong ocean _______ made it extremely dangerous for tourists to swim near the rocks.", options: ["current", "poverty", "leather", "dignity"], trans: "強烈的洋流使得遊客在岩石附近游泳變得極其危險。" },
+            { word: "domestic", sentence: "Flights from Taipei to Kaohsiung belong to _______ aviation routes rather than international ones.", options: ["domestic", "historical", "positive", "suitable"], trans: "台北飛往高雄的航班屬於國內航線，而非國際航線。" },
+            { word: "domestic", sentence: "Cats and dogs are common _______ animals that have lived with humans for thousands of years.", options: ["domestic", "exact", "freezing", "unusual"], trans: "貓和狗是常見的馴養動物，已經與人類共同生活了數千年。" },
+            { word: "introduce", sentence: "The English teacher asked the new foreign student to _______ herself to the class.", options: ["introduce", "devise", "calculate", "recover"], trans: "英文老師請新來的外國學生向全班自我介紹。" },
+            { word: "introduce", sentence: "The government plans to _______ a new law to better protect wild animals from hunting.", options: ["introduce", "assemble", "increase", "spread"], trans: "政府計畫引進一項新法律，以更好地保護野生動物免受獵捕。" },
+            { word: "settler", sentence: "The early European _______ built wooden cabins to survive the freezing winters in Canada.", options: ["settlers", "passengers", "volunteers", "beggars"], trans: "早期的歐洲移民建造了木屋，以便在加拿大寒冷的冬天裡生存下來。" },
+            { word: "settler", sentence: "History lessons teach us about conflicts between native populations and new _______.", options: ["settlers", "authorities", "partners", "hosts"], trans: "歷史課教會我們關於原住民人口與新開拓移民者之間的衝突。" },
+            { word: "desperate", sentence: "After wandering in the desert for two days, the travelers were _______ for fresh water.", options: ["desperate", "suitable", "positive", "domestic"], trans: "在沙漠中徘徊兩天后，這些旅人迫切需要淡水。" },
+            { word: "desperate", sentence: "The company made a _______ attempt to save its failing project by hiring an expert.", options: ["desperate", "historical", "exact", "freezing"], trans: "該公司透過雇用一名專家，做出了挽救其失敗專案的孤注一擲的嘗試。" },
+            { word: "get rid of", sentence: "My mother decided to _______ all the old, broken furniture during spring cleaning.", options: ["get rid of", "make a difference", "do volunteer work", "zone out"], trans: "我母親決定在春季大掃除時丟棄所有老舊損壞的家具。" },
+            { word: "get rid of", sentence: "It is very difficult to _______ these annoying weeds once they spread in your garden.", options: ["get rid of", "settle down", "shoot for", "separate out"], trans: "這些討厭的雜草一旦在你的花園裡蔓延，就很難將其徹底除掉。" },
+            { word: "altogether", sentence: "I decided to stop eating fast food _______ in order to live a healthier life.", options: ["altogether", "similarly", "exactly", "afterwards"], trans: "為了解脫更健康的生活，我決定完全不吃速食。" },
+            { word: "altogether", sentence: "The group ticket cost NT$3,000 _______ for the five high school students.", options: ["altogether", "whenever", "regularly", "permanently"], trans: "這張團體票五位高中生總共花費了台幣3,000元。" },
+            { word: "balance", sentence: "It is crucial for senior high school students to maintain a healthy _______ between study and rest.", options: ["balance", "strategy", "permission", "poverty"], trans: "對於高中生來說，在學習和休息之間保持健康的平衡至關重要。" },
+            { word: "balance", sentence: "The gymnast managed to keep her _______ perfectly on the narrow wooden beam.", options: ["balance", "dignity", "authority", "partner"], trans: "體操運動員成功地在狹窄的木樑上完美保持了平衡。" },
+            { word: "afterwards", sentence: "We will finish our English group project first, and _______ we can play video games.", options: ["afterwards", "altogether", "similarly", "exactly"], trans: "我們將先完成我們的英文小組計畫，之後我們就可以玩電子遊戲了。" },
+            { word: "afterwards", sentence: "She felt deeply regretful _______ for being so rude to her high school teacher.", options: ["afterwards", "whenever", "regularly", "permanently"], trans: "她後來因為對她高中老師如此無禮而感到深深的後悔。" },
+            { word: "return", sentence: "If this shirt does not fit you properly, you can _______ it to the clothing store with the receipt.", options: ["return", "recover", "introduce", "calculate"], trans: "如果這件襯衫不適合你，你可以憑收據將其退貨給服裝店。" },
+            { word: "return", sentence: "After completing his master's degree abroad, Kevin decided to _______ to his hometown.", options: ["return", "assemble", "increase", "spread"], trans: "在國外完成碩士學位後，凱文決定回到他的家鄉。" },
+            { word: "difficulty", sentence: "Many students experience great _______ when trying to understand advanced mathematical theories.", options: ["difficulty", "permission", "authority", "partnership"], trans: "許多學生在試圖理解高等數學理論時遇到了巨大的困難。" },
+            { word: "difficulty", sentence: "Despite facing financial _______, the persistent student never gave up on her dream.", options: ["difficulties", "strategies", "dignities", "leathers"], trans: "儘管面臨經濟困難（複數型變化），這位堅持不懈的學生從未放棄她的 dream。" },
+            { word: "adult", sentence: "The theme park ticket is free for kids but costs fifty dollars for an _______.", options: ["adult", "volunteer", "passenger", "settler"], trans: "主題樂園門票對兒童免費，但成年人需花費五十美元。" },
+            { word: "adult", sentence: "High school graduates are slowly transitioning into independent _______ life.", options: ["adult", "host", "beggar", "authority"], trans: "高中畢業生正慢慢轉變進入獨立的成年人生活。" },
+            { word: "saying", sentence: "As the old _______ goes, 'Actions speak louder than words.'", options: ["saying", "poverty", "leather", "dignity"], trans: "正如那句古老格言所說：『行動勝於言語。』" },
+            { word: "saying", sentence: "My grandmother always uses an ancient Chinese _______ to give wise life advice.", options: ["saying", "strategy", "permission", "partnership"], trans: "我祖母總是使用一句中國古老的諺語來提供明智的生活建議。" },
+            { word: "beggar", sentence: "The kind-hearted woman gave a warm meal and some change to the homeless _______ on the street.", options: ["beggar", "volunteer", "passenger", "settler"], trans: "那名好心的女子給了街上無家可歸的乞丐一頓溫熱的飯菜和一些零錢。" },
+            { word: "beggar", sentence: "It is heartbreaking to see a hungry _______ shivering outside in the freezing winter.", options: ["beggar", "host", "partner", "authority"], trans: "在寒冷的冬天看到一個飢餓的乞丐在外面發抖，真是令人心碎。" }
         ];
 
         let userProgress = {};
         let currentIdx = -1;
-        let selectedSentenceNum = 1; // 隨機抽 1 或 2，增加題目的豐富度
         let answeredCorrectly = false;
 
         function initQuiz() {
-            const saved = localStorage.getItem('cloze_quiz_progress_v1');
+            const saved = localStorage.getItem('cloze_quiz_progress_v5');
             if (saved) {
                 userProgress = JSON.parse(saved);
+                
+                // 檢查是否因為庫升級導致資料不一致，進行補全
+                quizDatabase.forEach((item, index) => {
+                    if (!userProgress[index]) {
+                        userProgress[index] = { box: 1, nextReview: 0 };
+                    }
+                });
             } else {
                 quizDatabase.forEach((item, index) => {
                     userProgress[index] = {
-                        box: 1,          // 熟練度盒子 (1-5)
-                        nextReview: 0,   // 時間戳
-                        historyCount: 0
+                        box: 1,          
+                        nextReview: 0
                     };
                 });
                 saveProgress();
@@ -456,21 +405,31 @@
         }
 
         function saveProgress() {
-            localStorage.setItem('cloze_quiz_progress_v1', JSON.stringify(userProgress));
+            localStorage.setItem('cloze_quiz_progress_v5', JSON.stringify(userProgress));
+        }
+
+        // Fisher-Yates 隨機洗牌演算法
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
         }
 
         function pickNextQuestion() {
             const now = Date.now();
             let pool = [];
 
-            // 1. 找出時間到的題目
+            // 1. 優先挑出時間到的題目
             for (let idx in userProgress) {
                 if (userProgress[idx].nextReview <= now) {
                     pool.push({ idx: parseInt(idx), ...userProgress[idx] });
                 }
             }
 
-            // 2. 如果都沒到時間，挑盒子等級最低的
+            // 2. 如果都沒到時間，挑盒子等級最低（最不熟）的題目
             if (pool.length === 0) {
                 let minBox = 6;
                 for (let idx in userProgress) {
@@ -481,11 +440,8 @@
                 }
             }
 
-            // 隨機選一個單字
             const chosen = pool[Math.floor(Math.random() * pool.length)];
             currentIdx = chosen.idx;
-            // 隨機決定要考句1還是句2
-            selectedSentenceNum = Math.random() < 0.5 ? 1 : 2;
 
             renderQuestion();
         }
@@ -497,20 +453,18 @@
             const expBox = document.getElementById('explanationBox');
             const nextContainer = document.getElementById('nextContainer');
 
-            // 隱藏解析與下一題區塊
             expBox.classList.remove('show');
             nextContainer.classList.remove('show');
+            document.getElementById('wrongActionBtn').classList.add('hidden');
+            document.getElementById('correctActionRow').classList.add('hidden');
 
-            // 取得對應句型的資料
-            let sentenceText = selectedSentenceNum === 1 ? data.sentence1 : data.sentence2;
-            let options = selectedSentenceNum === 1 ? data.options1 : data.options2;
+            // 隨機打亂 4 個選項的位置
+            let shuffledOptions = shuffleArray(data.options);
 
-            // 將底線轉化為網頁可讀格式
-            qBox.innerHTML = sentenceText.replace("_______", "<span class='blank-space'>[  ?  ]</span>");
+            qBox.innerHTML = data.sentence.replace("_______", "<span class='blank-space'>[  ?  ]</span>");
 
-            // 清空舊選項並生成新選項
             optionsContainer.innerHTML = "";
-            options.forEach(opt => {
+            shuffledOptions.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = opt;
@@ -527,26 +481,25 @@
             const nextContainer = document.getElementById('nextContainer');
             const data = quizDatabase[currentIdx];
 
-            // 鎖定所有選項不讓重複點選
             allBtns.forEach(btn => btn.classList.add('disabled'));
 
             if (chosenValue === correctWord) {
                 selectedBtn.classList.add('correct');
                 answeredCorrectly = true;
-                document.getElementById('feedbackTitle').innerText = "🎉 答對了！請評估此單字熟練度：";
+                document.getElementById('feedbackTitle').innerText = "🎉 答對了！請評估此題熟練度：";
+                document.getElementById('correctActionRow').classList.remove('hidden'); 
             } else {
                 selectedBtn.classList.add('wrong');
                 answeredCorrectly = false;
-                document.getElementById('feedbackTitle').innerText = "❌ 答錯了！此字將被優先安排複習：";
+                document.getElementById('feedbackTitle').innerText = "❌ 答錯了！此題將降回不熟練狀態：";
+                document.getElementById('wrongActionBtn').classList.remove('hidden'); 
                 
-                // 標示出正確答案
                 allBtns.forEach(btn => {
                     if (btn.innerText === correctWord) btn.classList.add('correct');
                 });
             }
 
-            // 顯示中文翻譯與詳解
-            document.getElementById('translationText').innerText = "💡 中文翻譯：\n" + (selectedSentenceNum === 1 ? data.trans1 : data.trans2);
+            document.getElementById('translationText').innerText = "💡 中文翻譯：\n" + data.trans;
             document.getElementById('analysisText').innerText = `🎯 本題核心字彙是【${data.word}】。請記住此情境與文法搭配。`;
             expBox.classList.add('show');
             nextContainer.classList.add('show');
@@ -557,15 +510,23 @@
             const now = Date.now();
             let minutes = 1;
 
-            // 如果答錯 (rating = 1) 或自我評估為不熟
             if (!answeredCorrectly || rating === 1) {
-                prog.box = 1;
-                minutes = 0.5; // 30秒後再次出現
+                prog.box = 1; // 答錯或重練回到 Box 1
+                minutes = 0.5; 
             } else {
-                // 答對且覺得簡單
-                prog.box = Math.min(5, prog.box + 1);
-                const intervals = [1, 20, 120, 1440, 5760]; // 複習級距：1分、20分、2小時、1天、4天
-                minutes = intervals[prog.box - 1];
+                // 答對時的記憶曲線升降
+                if (rating === 2) {
+                    prog.box = Math.max(2, prog.box); // 勉強答對，至少給予 Box 2 保底算入進度條
+                    minutes = 5; 
+                } else if (rating === 4) {
+                    prog.box = Math.min(5, prog.box + 1); 
+                    const intervals = [1, 20, 120, 1440, 5760]; 
+                    minutes = intervals[prog.box - 1];
+                } else if (rating === 5) {
+                    prog.box = Math.min(5, prog.box + 2); 
+                    const intervals = [5, 60, 360, 2880, 10080]; 
+                    minutes = intervals[prog.box - 1];
+                }
             }
 
             prog.nextReview = now + (minutes * 60 * 1000);
@@ -574,19 +535,24 @@
         }
 
         function updateProgressUi() {
-            let total = quizDatabase.length;
+            let total = quizDatabase.length; // 總題數為分母 = 110
             let mastered = 0;
+            
+            // 🌟 關鍵修改：只要答對過一次（Box 級別大於或等於 2），該題就直接算入進度分子！
             for (let idx in userProgress) {
-                if (userProgress[idx].box >= 4) mastered++;
+                if (userProgress[idx].box >= 2) {
+                    mastered++;
+                }
             }
+            
             const pct = Math.round((mastered / total) * 100);
             document.getElementById('progressFill').style.width = pct + '%';
-            document.getElementById('statsText').innerText = `${mastered}/${total} 字熟練 (${pct}%)`;
+            document.getElementById('statsText').innerText = `${mastered}/${total} 題已掌握 (${pct}%)`;
         }
 
         function resetData() {
             if (confirm("確定要清空所有的答題紀錄與記憶曲線進度嗎？")) {
-                localStorage.removeItem('cloze_quiz_progress_v1');
+                localStorage.removeItem('cloze_quiz_progress_v5');
                 initQuiz();
             }
         }
