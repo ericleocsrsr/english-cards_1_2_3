@@ -5,513 +5,467 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>青森環半島 8 日慢活自駕行</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        body { 
-            font-family: 'Noto Sans TC', sans-serif; 
-            background-color: #f0fdfa; /* Light teal background */
-            -webkit-font-smoothing: antialiased;
-        }
-        .timeline-container {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f1f5f9; }
         .timeline-line {
             position: absolute;
-            left: 0.375rem;
-            top: 0.5rem;
-            bottom: -1rem;
+            left: 11px; /* Center of the dot */
+            top: 24px;
+            bottom: -16px;
             width: 2px;
-            background-color: #99f6e4; /* Teal 200 */
+            background-color: #cbd5e1;
+            z-index: 0;
         }
-        .timeline-dot {
-            position: absolute;
-            left: -0.15rem; /* Adjust to center on the line */
-            top: 0.35rem;
-            width: 0.85rem;
-            height: 0.85rem;
-            border-radius: 50%;
-            background-color: #0d9488; /* Teal 600 */
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 0 2px #ccfbf1;
-            z-index: 10;
-        }
-        /* Last item timeline line hiding */
-        .timeline-container:last-child .timeline-line {
-            display: none;
-        }
-        .card-shadow {
-            box-shadow: 0 10px 25px -5px rgba(13, 148, 136, 0.08), 0 8px 10px -6px rgba(13, 148, 136, 0.04);
-        }
-        .hero-bg {
-            background-image: linear-gradient(rgba(13, 148, 136, 0.85), rgba(15, 118, 110, 0.95)), url('http://googleusercontent.com/image_collection/image_retrieval/5583402094385303770_0');
-            background-size: cover;
-            background-position: center;
-        }
+        /* Hide the line for the last item in a day */
+        .timeline-item:last-child .timeline-line { display: none; }
     </style>
 </head>
-<body class="text-slate-800 pb-20">
+<body class="text-slate-800 antialiased text-lg"> <!-- 基礎字體放大為 text-lg -->
 
     <!-- Hero Section -->
-    <header class="relative hero-bg text-white pt-24 pb-16 px-6 rounded-b-[2.5rem] shadow-lg mb-8">
-        <div class="relative z-10 text-center">
-            <span class="inline-block py-1 px-3 rounded-full bg-teal-500/30 border border-teal-300/50 text-teal-50 text-xs font-bold tracking-wider mb-4 uppercase">
-                AOMORI ROADTRIP 2026
-            </span>
-            <h1 class="text-3xl sm:text-4xl font-black mb-4 tracking-tight leading-snug">青森環半島<br>8 日慢活自駕</h1>
-            <p class="text-base text-teal-50 mb-8 font-medium">長輩友善 ‧ 百年古民家 ‧ 頂級溫泉 ‧ 市區連住</p>
-            
-            <div class="flex flex-col gap-3 max-w-xs mx-auto">
-                <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl text-sm font-medium border border-white/20 flex items-center justify-center gap-2">
-                    <i class="ph-fill ph-calendar-check text-teal-300 text-lg"></i> 2026/09/04 - 09/11
-                </div>
-                <div class="bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl text-sm font-medium border border-white/20 flex items-center justify-center gap-2">
-                    <i class="ph-fill ph-steering-wheel text-teal-300 text-lg"></i> 每日車程控制 1.5H 內
-                </div>
+    <header class="relative bg-teal-800 text-white pt-24 pb-20 overflow-hidden shadow-lg">
+        <div class="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center"></div>
+        <div class="absolute inset-0 bg-teal-900/70"></div>
+        <div class="relative max-w-4xl mx-auto px-6 z-10 text-center">
+            <h1 class="text-4xl md:text-5xl font-black mb-6 tracking-tight leading-tight">🍁 青森環半島<br>8 日極致慢活自駕</h1>
+            <p class="text-xl md:text-2xl text-teal-100 mb-8 font-medium">專為長輩設計 • 每日悠閒入住 • 零負擔絕景之旅</p>
+            <div class="flex flex-wrap justify-center gap-3">
+                <span class="bg-white/20 backdrop-blur-sm px-5 py-2.5 rounded-full text-base font-bold border border-white/30 flex items-center gap-2"><i class="ph ph-calendar-blank text-xl"></i> 2026/09/04 - 09/11</span>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-md mx-auto px-4 relative z-20 space-y-6">
+    <main class="max-w-3xl mx-auto px-4 py-8 -mt-10 relative z-20">
         
         <!-- Day 1 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 1</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/4 (五) • 抵達與古民家</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> 青森蔵泊
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D1</span>
+                    9/4 (五)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-house-line text-teal-600 text-2xl"></i> 青森蔵泊 (包棟古民家)
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/10274837249958878217_0" alt="青森蔵泊古民家" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">14:20</div>
-                        <h3 class="font-bold text-slate-800">抵達青森機場</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">辦理自駕租車手續，準備展開旅程。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">15:45 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded uppercase">採買</span></div>
-                        <h3 class="font-bold text-slate-800">當地超市大採購</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">於 MaxValu、Universe 或 Coop 買齊今晚晚餐與明早早餐 (生鮮、熟食、零食)。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">16:45 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] rounded uppercase">入住</span></div>
-                        <h3 class="font-bold text-slate-800">青森蔵泊 Aomori Kurahaku</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">打開白壁大門，感受 1000 坪綠意庭園與挑高木樑百年建築，專屬包棟空間享用晚餐。</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <!-- Timeline Item -->
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">14:20</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">抵達青森機場</h3>
+                    <p class="text-slate-600 text-lg">辦理自駕租車手續，準備展開旅程。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">15:45 <span class="inline-block align-middle text-sm bg-blue-100 text-blue-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">超市補貨</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">當地中大型超市</h3>
+                    <p class="text-slate-600 text-lg">前往 MaxValu、Universe 或 Coop，買齊今晚晚餐與明早早餐（古民家有全套廚房）。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-orange-500 z-10 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
+                    <div class="font-bold text-orange-600 text-xl leading-none mb-2">16:45 <span class="inline-block align-middle text-sm bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">入住</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">青森蔵泊 Aomori Kurahaku</h3>
+                    <p class="text-slate-600 text-lg">抵達黑石市。打開白壁大門，享受廣達 1000 坪綠意庭園與挑高木樑的百年建築，在專屬空間內吃晚餐。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
+                <div class="bg-amber-50/50 p-5 rounded-2xl text-lg space-y-4 border border-amber-100">
+                    <p class="flex items-start gap-3"><i class="ph ph-fork-knife text-orange-500 text-2xl mt-0.5 shrink-0"></i> <span><strong>午餐：</strong>於飛機上用餐。</span></p>
                 </div>
             </div>
         </article>
 
         <!-- Day 2 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 2</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/5 (六) • 巨像與海岸</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> 桜楽 Moana
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D2</span>
+                    9/5 (六)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-house-line text-teal-600 text-2xl"></i> 桜楽 Moana (包棟海景)
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/7080431001307364726_0" alt="鶴之舞橋" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">09:45</div>
-                        <h3 class="font-bold text-slate-800">立佞武多館</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">搭大電梯直達頂樓，沿無障礙緩坡輕鬆「走下坡」，欣賞 23 公尺高發光巨像。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">11:20</div>
-                        <h3 class="font-bold text-slate-800">鶴之舞橋</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">環境平坦，坐在橋頭長椅遠眺日本最長木造拱橋與岩木山倒影。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">13:00 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">午餐</span></div>
-                        <h3 class="font-bold text-slate-800">千疊敷海岸</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">車停海岸旁，走 3 步即是平坦海蝕岩盤。於附近享用在地名產「深浦鮪魚排丼」。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">15:30</div>
-                        <h3 class="font-bold text-slate-800">十二湖（青池）</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">走平緩森林木棧道約 5 分鐘，親睹神祕蒂芬妮藍池水。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">16:45 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] rounded uppercase">入住</span></div>
-                        <h3 class="font-bold text-slate-800">桜楽 Moana</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">在一樓客廳透過整面落地窗看海，享受包棟海景落日的溫馨時光。(入住前請於超市短暫補貨)</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">09:45</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">立佞武多館</h3>
+                    <p class="text-slate-600 text-lg">搭大電梯直達頂樓，沿無障礙緩坡輕鬆往下走，欣賞 23 公尺高的震撼發光巨像。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">11:20</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">鶴之舞橋</h3>
+                    <p class="text-slate-600 text-lg">環境平坦，長輩可坐在橋頭長椅遠眺日本最長木造拱橋與岩木山倒影。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">13:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">千疊敷海岸</h3>
+                    <p class="text-slate-600 text-lg">車子直接停在海岸旁，下車走 3 步就是平坦海蝕岩盤，極近距離看海 (含午餐時間)。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">15:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">十二湖（青池）</h3>
+                    <p class="text-slate-600 text-lg">走極平緩的森林木棧道約 5 分鐘，親眼目睹神祕的蒂芬妮藍池水。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-orange-500 z-10 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
+                    <div class="font-bold text-orange-600 text-xl leading-none mb-2">16:45 <span class="inline-block align-middle text-sm bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">入住</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">桜楽 Moana</h3>
+                    <p class="text-slate-600 text-lg">進民宿前先在當地超市簡單補貨。在一樓客廳透過整面落地窗看海，享受落日溫馨時光。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1504730656093-e4d6d396ebf4?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
+                <div class="bg-amber-50/50 p-5 rounded-2xl text-lg space-y-4 border border-amber-100">
+                    <p class="flex items-start gap-3"><i class="ph ph-fork-knife text-orange-500 text-2xl mt-0.5 shrink-0"></i> <span><strong>午餐建議：</strong>於千疊敷海岸附近享用名產「深浦鮪魚排丼」。</span></p>
+                    <p class="flex items-start gap-3"><i class="ph ph-info text-blue-500 text-2xl mt-0.5 shrink-0"></i> <span><strong>彈性備用：</strong>14:15 視長輩體力可加入【驫木駅】短暫停留。</span></p>
                 </div>
             </div>
         </article>
 
         <!-- Day 3 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 3</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/6 (日) • 大正浪漫與頂奢</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> 界 津輕
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D3</span>
+                    9/6 (日)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-bed text-teal-600 text-2xl"></i> 星野集團 界 津輕
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/12381750684088015990_0" alt="藤田紀念庭園" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">09:45 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded uppercase">休息</span></div>
-                        <h3 class="font-bold text-slate-800">驫木駅</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">日本海旁的無人木屋車站，短暫停留拍照。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">10:15 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-slate-100 text-slate-600 text-[10px] rounded uppercase">休息</span></div>
-                        <h3 class="font-bold text-slate-800">北金ヶ沢銀杏</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">停車方便，觀賞樹齡超過 1000 年的日本第一大巨木銀杏。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">11:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">午餐</span></div>
-                        <h3 class="font-bold text-slate-800">藤田紀念庭園</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">漫步傳統日式庭園，於園內「大正浪漫喫茶室」享用蘋果派與洋食。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">13:30</div>
-                        <h3 class="font-bold text-slate-800">最勝院五重塔</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">東北最美五重塔，環境莊嚴且清幽。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">14:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] rounded uppercase">入住</span></div>
-                        <h3 class="font-bold text-slate-800">星野集團 界 津輕</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">提早進房泡漂浮青森蘋果檜木溫泉，晚間優雅享用頂級季節會席料理。</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">10:15</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">北金ヶ沢銀杏</h3>
+                    <p class="text-slate-600 text-lg">中途休息點。觀賞樹齡超過 1000 年的日本第一大巨木銀杏，停車方便。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">11:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">藤田紀念庭園</h3>
+                    <p class="text-slate-600 text-lg">漫步在極美的傳統日式庭園中，步道平緩寬敞（含午餐時間）。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">13:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">最勝院五重塔</h3>
+                    <p class="text-slate-600 text-lg">東北最美五重塔，環境莊嚴且清幽。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-orange-500 z-10 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
+                    <div class="font-bold text-orange-600 text-xl leading-none mb-2">14:30 <span class="inline-block align-middle text-sm bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">入住</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">星野集團 界 津輕</h3>
+                    <p class="text-slate-600 text-lg">提早進房，擁有最充裕的時間泡漂浮青森蘋果的檜木溫泉，晚上優雅享用頂級季節會席。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1542051812-3211516e88d0?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
+                <div class="bg-amber-50/50 p-5 rounded-2xl text-lg space-y-4 border border-amber-100">
+                    <p class="flex items-start gap-3"><i class="ph ph-fork-knife text-orange-500 text-2xl mt-0.5 shrink-0"></i> <span><strong>午餐建議：</strong>藤田紀念庭園內的百年洋館「大正浪漫喫茶室」。</span></p>
                 </div>
             </div>
         </article>
 
         <!-- Day 4 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 4</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/7 (一) • 奧入瀨與湖畔</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> 十和田王子
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D4</span>
+                    9/7 (一)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-bed text-teal-600 text-2xl"></i> 十和田王子飯店
                 </div>
             </div>
             
-            <div class="p-6">
-                <!-- Fallback to Oirase image since Towada image search wasn't executed specifically, reusing retrieved Oirase -->
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/5583402094385303770_0" alt="奧入瀨溪流銚子大滝" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">11:00</div>
-                        <h3 class="font-bold text-slate-800">奧入瀨溪流 (銚子大滝)</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">沿溪流緩慢開車賞景，瀑布在國道旁，靠邊停車下車 1 分鐘即可感受水花。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">13:00 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">午餐</span></div>
-                        <h3 class="font-bold text-slate-800">十和田湖遊覽船</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">休屋地區「十和田食堂」享用姬鱒定食後，搭寬敞遊覽船坐沙發吹冷氣賞湖景。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">14:30</div>
-                        <h3 class="font-bold text-slate-800">發荷峠展望台</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">車停觀景台旁，俯瞰十和田湖全景視野最棒的平地制高點。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">15:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] rounded uppercase">入住</span></div>
-                        <h3 class="font-bold text-slate-800">十和田王子飯店</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">傍晚帶長輩在飯店專屬的完全平坦湖畔大草皮散步、面對湖景喝咖啡。</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">11:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">奧入瀨溪流 (銚子大滝)</h3>
+                    <p class="text-slate-600 text-lg">沿溪流緩慢開車賞景，瀑布就在國道旁，靠邊停車長輩下車 1 分鐘即可感受水花。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">13:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">十和田湖遊覽船</h3>
+                    <p class="text-slate-600 text-lg">搭乘寬敞的遊覽船，坐在船內沙發吹冷氣看雙重火山口湖景。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">14:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">發荷峠展望台</h3>
+                    <p class="text-slate-600 text-lg">車子直接停在觀景台旁，俯瞰十和田湖全景視野最棒的平地制高點。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-orange-500 z-10 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
+                    <div class="font-bold text-orange-600 text-xl leading-none mb-2">15:30 <span class="inline-block align-middle text-sm bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">入住</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">十和田王子飯店</h3>
+                    <p class="text-slate-600 text-lg">傍晚帶長輩在飯店專屬的完全平坦湖畔大草皮散步、面對湖景喝咖啡。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
+                <div class="bg-amber-50/50 p-5 rounded-2xl text-lg space-y-4 border border-amber-100">
+                    <p class="flex items-start gap-3"><i class="ph ph-fork-knife text-orange-500 text-2xl mt-0.5 shrink-0"></i> <span><strong>午餐建議：</strong>十和田湖休屋地區的「十和田食堂」品嚐姬鱒定食。</span></p>
                 </div>
             </div>
         </article>
 
         <!-- Day 5 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 5</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/8 (二) • 藝術與原湯</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> 蔦温泉旅館
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D5</span>
+                    9/8 (二)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-bed text-teal-600 text-2xl"></i> 蔦温泉旅館
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/6748131686395501977_0" alt="蔦沼" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">10:00</div>
-                        <h3 class="font-bold text-slate-800">十和田市現代美術館</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">在平坦的藝術廣場與巨大草間彌生南瓜、花馬合照。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">11:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded uppercase">採買</span></div>
-                        <h3 class="font-bold text-slate-800">當地超市 (Universe)</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">輕鬆採買在地特產、水果與飲料。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">13:00 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">午餐</span></div>
-                        <h3 class="font-bold text-slate-800">石ヶ戸休憩所 (奧入瀨)</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">長輩下車走 2 分鐘近距離賞溪流，並於食堂簡單享用蕎麥麵午餐。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">14:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] rounded uppercase">入住</span></div>
-                        <h3 class="font-bold text-slate-800">蔦温泉旅館 & 蔦沼</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">提早入住！下午沿平整木棧道散步 15 分鐘看翠綠蔦沼，晚間享受珍貴湧出原湯「泉響之湯」。</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">10:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">十和田市現代美術館</h3>
+                    <p class="text-slate-600 text-lg">在平坦的藝術廣場與巨大草間彌生南瓜、花馬合照。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">11:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">當地中大型超市</h3>
+                    <p class="text-slate-600 text-lg">輕鬆採買在地特產、水果與飲料。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">13:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">奧入瀨溪流 (第二段點水)</h3>
+                    <p class="text-slate-600 text-lg">抵達石ヶ戸休憩所或雲井の流れ，長輩下車走 2 分鐘即可近距離賞溪流。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-orange-500 z-10 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
+                    <div class="font-bold text-orange-600 text-xl leading-none mb-2">14:30 <span class="inline-block align-middle text-sm bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">入住</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">蔦温泉旅館 (原湯名舖)</h3>
+                    <p class="text-slate-600 text-lg">提早入住！下午沿平整木棧道散步 15 分鐘至「蔦沼」。晚間享受地板湧出的珍貴「泉響之湯」。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1518182170546-076616fdfaaf?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
+                <div class="bg-amber-50/50 p-5 rounded-2xl text-lg space-y-4 border border-amber-100">
+                    <p class="flex items-start gap-3"><i class="ph ph-fork-knife text-orange-500 text-2xl mt-0.5 shrink-0"></i> <span><strong>午餐建議：</strong>石ヶ戸休憩所食堂（簡單享用蕎麥麵，步調最順暢）。</span></p>
                 </div>
             </div>
         </article>
 
         <!-- Day 6 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 6</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/9 (三) • 高空與市區</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> Daiwa Roynet
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D6</span>
+                    9/9 (三)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-bed text-teal-600 text-2xl"></i> 青森大和 ROYNET
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/1328488268351001803_0" alt="八甲田山纜車" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">09:20</div>
-                        <h3 class="font-bold text-slate-800">睡蓮沼 & 地獄沼</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">路邊停車走 1 分鐘，欣賞高山沼澤倒映絕景與火山白煙。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">10:15</div>
-                        <h3 class="font-bold text-slate-800">城倉大橋</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">路邊停車俯瞰深谷紅葉預備軍。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">11:00 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">午餐</span></div>
-                        <h3 class="font-bold text-slate-800">酸湯溫泉餐廳</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">避開人潮，先享用傳統「酸湯蕎麥麵」。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">12:30</div>
-                        <h3 class="font-bold text-slate-800">八甲田纜車</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">搭乘大型景觀纜車直達山頂，於平緩展望台俯瞰青森市。*(天候不佳可隨時取消)*</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">14:30</div>
-                        <h3 class="font-bold text-slate-800">觀光物產館 ASPAM</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">搭電梯直達展望台俯瞰海景，一樓採買在地工藝品。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">15:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-orange-100 text-orange-700 text-[10px] rounded uppercase">入住</span></div>
-                        <h3 class="font-bold text-slate-800">大和 ROYNET 酒店</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">結束山區行程回到市區，晚餐可帶長輩在飯店周邊輕鬆用餐。</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">09:20</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">睡蓮沼 / 地獄沼</h3>
+                    <p class="text-slate-600 text-lg">路邊停車走 1 分鐘，欣賞高山沼澤與火山白煙奇觀。</p>
                 </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">11:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">酸湯溫泉餐廳 (先行午餐)</h3>
+                    <p class="text-slate-600 text-lg">避開中午人潮，先享用傳統「酸湯蕎麥麵」。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">12:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">八甲田纜車</h3>
+                    <p class="text-slate-600 text-lg">吃飽後搭乘大型景觀纜車直達山頂，於平緩展望台俯瞰青森市。(天候不佳可隨時取消)</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">14:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">觀光物產館 ASPAM</h3>
+                    <p class="text-slate-600 text-lg">港口三角地標，搭電梯直達展望台俯瞰海景，一樓採買在地工藝品。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-orange-500 z-10 shadow-[0_0_10px_rgba(249,115,22,0.5)]"></span>
+                    <div class="font-bold text-orange-600 text-xl leading-none mb-2">15:30 <span class="inline-block align-middle text-sm bg-orange-100 text-orange-700 px-2.5 py-1 rounded-md ml-2 font-bold tracking-wide">入住</span></div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">青森大和 ROYNET 酒店</h3>
+                    <p class="text-slate-600 text-lg">回歸舒適市區，晚餐可帶長輩在飯店對面的美食街輕鬆用餐。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
             </div>
         </article>
 
         <!-- Day 7 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 7</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/10 (四) • 遺跡與港灣</p>
-                </div>
-                <div class="text-right">
-                    <span class="inline-flex items-center gap-1.5 bg-teal-100 text-teal-700 text-xs font-bold px-2.5 py-1.5 rounded-lg">
-                        <i class="ph-fill ph-bed text-sm"></i> Daiwa Roynet
-                    </span>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 mb-10 overflow-hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D7</span>
+                    9/10 (四)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-bed text-teal-600 text-2xl"></i> 青森大和 ROYNET <span class="text-sm font-normal ml-1">(連住免收行李)</span>
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/11967301844012834384_0" alt="青森犬雕塑" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="bg-teal-50 rounded-xl p-3 mb-6 border border-teal-100">
-                    <p class="text-sm text-teal-800 font-medium text-center">💡 <b>免收行李日：</b>睡到自然醒，輕裝出發！</p>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">10:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">免收行李，輕裝出發</h3>
+                    <p class="text-slate-600 text-lg">睡到自然醒，吃完早餐後悠哉出門。</p>
                 </div>
-
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">10:30</div>
-                        <h3 class="font-bold text-slate-800">三內丸山遺跡</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">日本最大規模繩文聚落。園區廣闊平坦，長輩可輕鬆漫步觀賞巨大木柱建築。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">12:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">午餐</span></div>
-                        <h3 class="font-bold text-slate-800">青森縣立美術館</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">館內純白極簡有大電梯。看 8.5 公尺巨大「青森犬」雕塑，於館內「四隻貓」咖啡廳享用洋食。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">14:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded uppercase">購物</span></div>
-                        <h3 class="font-bold text-slate-800">A-FACTORY</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">返回市區港邊，在挑高的質感空間內悠閒逛蘋果特色伴手禮。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">15:30</div>
-                        <h3 class="font-bold text-slate-800">睡魔之家 WA RASSE</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">就在 A-FACTORY 旁，室內無障礙，近距離感受巨型睡魔燈籠的震撼。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">16:30</div>
-                        <h3 class="font-bold text-slate-800">青森港濱散步</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">沿著平坦的港濱木棧道吹海風，欣賞夕陽與跨海大橋美景，18:00 返回飯店。</p>
-                    </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">10:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">三內丸山遺跡</h3>
+                    <p class="text-slate-600 text-lg">日本最大規模繩文聚落，園區極度廣闊平坦，輕鬆漫步。</p>
                 </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">12:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">青森縣立美術館</h3>
+                    <p class="text-slate-600 text-lg">看巨大的 8.5 公尺「青森犬」雕塑，並於館內咖啡廳「四隻貓」享用洋食簡餐。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">14:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">A-FACTORY</h3>
+                    <p class="text-slate-600 text-lg">返回市區港邊，在挑高的質感空間內悠閒逛蘋果特色伴手禮。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">15:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">睡魔之家 WA RASSE</h3>
+                    <p class="text-slate-600 text-lg">全室內無障礙，近距離感受巨型發光睡魔燈籠的震撼。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">16:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">青森港 (Aomori Bay Bridge)</h3>
+                    <p class="text-slate-600 text-lg">沿著平坦的港濱木棧道吹吹海風，欣賞夕陽與跨海大橋美景，享受極度放鬆的午後。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1582560469781-1965b92a9ef5?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
             </div>
         </article>
 
         <!-- Day 8 -->
-        <article class="bg-white rounded-3xl card-shadow border border-teal-50 overflow-hidden mb-6">
-            <div class="bg-teal-50/50 px-6 py-5 border-b border-teal-100 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black text-teal-800">Day 8</h2>
-                    <p class="text-xs font-bold text-teal-600 mt-1 uppercase tracking-wider">9/11 (五) • 海鮮與賦歸</p>
+        <article class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 hover:shadow-md transition-shadow">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b-2 border-slate-100 pb-5 gap-4">
+                <h2 class="text-3xl font-black text-teal-800 flex items-center gap-4">
+                    <span class="bg-teal-600 text-white w-14 h-14 flex items-center justify-center rounded-2xl text-2xl shadow-sm">D8</span>
+                    9/11 (五)
+                </h2>
+                <div class="inline-flex items-center gap-2 text-lg text-slate-700 bg-slate-100 px-4 py-2 rounded-xl font-bold self-start md:self-auto">
+                    <i class="ph ph-airplane-takeoff text-teal-600 text-2xl"></i> 賦歸
                 </div>
             </div>
             
-            <div class="p-6">
-                <img src="http://googleusercontent.com/image_collection/image_retrieval/1847469268282660545_0" alt="古川市場海鮮丼" class="w-full h-40 rounded-2xl object-cover mb-6 shadow-sm">
-                
-                <div class="space-y-1">
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">09:30</div>
-                        <h3 class="font-bold text-slate-800">飯店退房</h3>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">10:00 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] rounded uppercase">早午餐</span></div>
-                        <h3 class="font-bold text-slate-800">古川市場 (青森魚菜中心)</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">體驗著名的「乃っけ丼 (隨選海鮮丼)」。在各攤位挑選喜歡的新鮮生魚片，作為完美收尾。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">13:00</div>
-                        <h3 class="font-bold text-slate-800">青森機場還車</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">附設加油站加滿油後，航廈對面直接步行進出還車櫃檯，動線極短。</p>
-                    </div>
-                    <div class="timeline-container">
-                        <div class="timeline-line"></div>
-                        <div class="timeline-dot"></div>
-                        <div class="font-black text-teal-600 text-lg mb-0.5">15:30 <span class="align-middle inline-block ml-1 px-1.5 py-0.5 bg-teal-100 text-teal-700 text-[10px] rounded uppercase">出發</span></div>
-                        <h3 class="font-bold text-slate-800">搭機返回台灣</h3>
-                        <p class="text-slate-500 text-sm mt-1 leading-relaxed">搭乘長榮直飛航班，預計 18:15 抵達台灣。</p>
-                    </div>
+            <div class="space-y-6 pb-6">
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">09:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">飯店退房</h3>
                 </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">10:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">古川市場 (青森魚菜中心)</h3>
+                    <p class="text-slate-600 text-lg">體驗「乃っけ丼（隨選海鮮丼）」。拿著白飯在市場內各攤位挑選喜歡的新鮮生魚片、干貝，作為青森之旅最棒的收尾。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">13:00</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">青森機場 / 辦理還車</h3>
+                    <p class="text-slate-600 text-lg">附設加油站加滿油後，直接在航廈對面步行進出還車櫃檯，動線極短。</p>
+                </div>
+                <div class="relative pl-10 timeline-item">
+                    <div class="timeline-line"></div>
+                    <span class="absolute left-0 top-1.5 w-6 h-6 rounded-full bg-white border-4 border-teal-500 z-10"></span>
+                    <div class="font-bold text-teal-600 text-xl leading-none mb-2">15:30</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1">搭機返回台灣</h3>
+                    <p class="text-slate-600 text-lg">預計 18:15 抵達台灣。</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-6 border-t-2 border-dashed border-slate-200">
+                <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?q=80&w=800&auto=format&fit=crop" alt="" class="w-full h-56 rounded-2xl object-cover mb-5 shadow-sm">
             </div>
         </article>
 
     </main>
 
-    <!-- Floating Action Button -->
-    <div class="fixed bottom-6 right-6 z-50">
-        <a href="#" onclick="window.scrollTo({top: 0, behavior: 'smooth'}); return false;" class="bg-teal-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-teal-700 transition-colors">
-            <i class="ph-bold ph-caret-up text-xl"></i>
-        </a>
-    </div>
+    <footer class="bg-slate-800 text-slate-400 text-center py-10 text-lg mt-12 font-medium tracking-wide">
+        <p>為長輩量身打造的青森自駕漫遊之旅 • 祝您旅途愉快！</p>
+    </footer>
 
 </body>
 </html>
